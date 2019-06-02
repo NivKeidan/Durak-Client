@@ -1,0 +1,17 @@
+.card-defended-below {
+    z-index: -1;
+    position: absolute;
+}
+
+.card-defended-top {
+    z-index: 1;
+    position: relative;
+    left: 0.3%;
+    top: 0.3%;
+    transform: rotate(45deg);
+}
+.card-defended {
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+}

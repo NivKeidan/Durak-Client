@@ -1,0 +1,48 @@
+.hand {
+    border: 1px solid black;
+}
+
+.hand-top {
+    /*Grid*/
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.hand-left {
+    /*Grid*/
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.hand-right {
+    /*Grid*/
+    grid-column: 3;
+    grid-row: 2;
+}
+
+.hand-bottom {
+    /*Grid*/
+    grid-column: 2;
+    grid-row: 3;
+}
+
+.handCards {
+    /*Flex*/
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+}
+
+.test1 {
+    /*Grid*/
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.test2 {
+    /*Grid*/
+    grid-column: 3;
+    grid-row: 1;
+}

@@ -1,0 +1,7 @@
+.card {
+    border: 5px solid transparent;
+}
+
+.card-selected {
+    border: 5px solid blue;
+}

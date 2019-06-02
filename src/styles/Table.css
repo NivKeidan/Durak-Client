@@ -1,0 +1,48 @@
+.table {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.deck-and-kozer {
+    margin-top: 10px;
+    position: absolute;
+    margin-left: 30px;
+}
+
+.kozerCard {
+    height: 80px;
+    transform: rotate(20deg);
+}
+
+.kozerSuit {
+    height: 80px;
+}
+
+.deck {
+    display: inline;
+}
+
+.deck-img {
+    position: relative;
+    height: 80px;
+    transform: rotate(90deg);
+}
+
+.deck-number {
+    display: inline;
+    position: absolute;
+    text-align: center;
+    /*left: 50%;*/
+    /*top: 15%;*/
+    /*font-size: 300%;*/
+    color: darkgreen;
+}
+
+.table-cards {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+}
+

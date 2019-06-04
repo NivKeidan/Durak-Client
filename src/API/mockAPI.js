@@ -94,7 +94,6 @@ class MockAPI {
         const defendingPlayerNum = defendObject.defendingPlayerNum;
         const defendingCardCode = defendObject.defendingCardCode;
         const attackingCardCode = defendObject.attackingCardCode;
-        const b = 1;
 
         return new Promise((resolve, reject) => {
             setTimeout(() => {

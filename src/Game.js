@@ -35,13 +35,47 @@ class Game extends React.Component {
         this.startGameAPI();
     }
 
+    // API Calls
+
     startGameAPI() {
         this.API.startGame().then(
             (partialState) => {
                 this.setState({...partialState});
             },
-            function failed() {});
+            function failed() {
+            });
     }
+
+    takeCards(playerNum) {
+
+        // Validate this is player's turn
+        if (this.state.playerDefending !== parseInt(playerNum))
+            return;
+
+        // Validate cards on table
+        if (this.state.cardsOnTable.length === 0)
+            return;
+
+        this.API.takeAllCards(playerNum).then(
+            (partialState) => {
+                this.setState({...partialState})
+            },
+            function failed(errorMsg) {
+                console.log(errorMsg);
+            });
+    }
+
+    handleFinalizeTurn() {
+        this.API.finalizeTurn().then(
+            (partialState) => {
+                this.setState({...partialState});
+            },
+            function failed(errorMsg) {
+                console.log(errorMsg);
+            });
+    }
+
+    // Event handlers
 
     handleTableClick() {
 
@@ -53,8 +87,10 @@ class Game extends React.Component {
             // VALIDATION: Check that the player has this card
             // VALIDATION: Check that this card can be added now
 
-            this.API.attack({attackingPlayerNum: selectedCardPlayerNum,
-                attackingCardCode: selectedCardCode}).then(
+            this.API.attack({
+                attackingPlayerNum: selectedCardPlayerNum,
+                attackingCardCode: selectedCardCode
+            }).then(
                 ({playerCards, cardsOnTable}) => {
 
                     this.setState((prevState) => {
@@ -135,8 +171,10 @@ class Game extends React.Component {
         }
     }
 
+    // Renderings
+
     renderHands() {
-        return(
+        return (
             Object.keys(this.state.playerPositions).map(
                 (item, key) => <Hand key={key}
                                      playerNum={item}
@@ -169,34 +207,6 @@ class Game extends React.Component {
         );
     };
 
-    takeCards(playerNum) {
-
-        // Validate this is player's turn
-        if (this.state.playerDefending !== parseInt(playerNum))
-            return;
-
-        // Validate cards on table
-        if (this.state.cardsOnTable.length === 0)
-            return;
-
-        this.API.takeAllCards(playerNum).then(
-            (partialState) => {
-                this.setState({...partialState})
-            },
-            function failed(errorMsg) {
-                console.log(errorMsg);
-            });
-    }
-
-    handleFinalizeTurn() {
-        this.API.finalizeTurn().then(
-            (partialState) => {
-                this.setState({...partialState});
-            },
-            function failed(errorMsg) {
-                console.log(errorMsg);
-            });
-    }
 }
 
 export default Game;

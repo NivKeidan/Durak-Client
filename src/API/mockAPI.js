@@ -4,13 +4,19 @@ import cloneDeep from 'loadsh/cloneDeep';
 class MockAPI {
 
     constructor() {
+
+        // Constants and option related
         this.startingCardsNum = 6;
         this.numOfPlayers = 4;
-        this.playerStarting = 1;
-        this.playerDefending = 2;
         this.attackingCardsLimit = 6;
-        this.cardsOnTable = [];
 
+        // Game end variables
+        this.gameOver = false;
+        this.isDraw = false;
+        this.losingPlayerNum = null;
+
+        // Cards
+        this.cardsOnTable = [];
         this.deck = this.shuffleDeck();
         this.playerCards = {
                 1: this.dealStartingCards(),
@@ -18,9 +24,16 @@ class MockAPI {
                 3: this.dealStartingCards(),
                 4: this.dealStartingCards()
             };
-        this.kozerCard = this.deck.slice(1)[0];
+        this.kozerCard = this.getKozerCardFromDeck();
         this.numOfCardsLeftInDeck = this.deck.length;
+
+        // First turn
+        this.playerStarting = this.getPlayerStarting();
+        this.playerDefending = this.getNextPlayer(this.playerStarting);
     }
+
+
+    // Calls to server
 
     startGame() {
         return new Promise ((resolve, reject) => {
@@ -28,7 +41,9 @@ class MockAPI {
                 resolve({
                     playerCards: cloneDeep(this.playerCards),
                     kozerCard: this.kozerCard,
-                    numOfCardsLeftInDeck: this.numOfCardsLeftInDeck});
+                    numOfCardsLeftInDeck: this.numOfCardsLeftInDeck,
+                    playerStarting: this.playerStarting,
+                    playerDefending: this.playerDefending});
             })
         })
     }
@@ -143,7 +158,11 @@ class MockAPI {
                 this.playerCards[playerNum] = this.playerCards[playerNum].concat(cardsToTake);
                 this.fillUpCards();
                 this.updateCardsLeftInDeck();
-                this.setUpNextTurn(false);
+                if (this.isGameOver()) {
+                    this.handleGameOver();
+                }
+                else
+                    this.setUpNextTurn(false);
 
 
                 resolve({
@@ -151,7 +170,10 @@ class MockAPI {
                     cardsOnTable: [],
                     numOfCardsLeftInDeck: this.numOfCardsLeftInDeck,
                     playerStarting: this.playerStarting,
-                    playerDefending: this.playerDefending
+                    playerDefending: this.playerDefending,
+                    gameOver: this.gameOver,
+                    isDraw: this.isDraw,
+                    losingPlayerNum: this.losingPlayerNum
                 });
             }, delay);
         });
@@ -161,6 +183,13 @@ class MockAPI {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 // Validations
+
+                // Table is not empty!
+
+                if (this.isTableEmpty()) {
+                    reject("Table is empty!");
+                    return;
+                }
 
                 if (!this.areAllTableCardsDefended()) {
                     reject("Not all cards are defended");
@@ -172,17 +201,26 @@ class MockAPI {
                 this.cardsOnTable = [];
                 this.fillUpCards();
                 this.updateCardsLeftInDeck();
-                this.setUpNextTurn(true);
+                if (this.isGameOver()) {
+                    this.handleGameOver();
+                }
+                else
+                    this.setUpNextTurn(true);
 
                 resolve({
                     playerCards: cloneDeep(this.playerCards),
                     cardsOnTable: [],
                     numOfCardsLeftInDeck: this.numOfCardsLeftInDeck,
                     playerStarting: this.playerStarting,
-                    playerDefending: this.playerDefending})
+                    playerDefending: this.playerDefending,
+                    gameOver: this.gameOver,
+                    isDraw: this.isDraw,
+                    losingPlayerNum: this.losingPlayerNum})
             }, delay);
         })
     }
+
+    // Imitates server helper methods
 
     shuffleDeck() {
         function shuffle(a) {
@@ -265,6 +303,12 @@ class MockAPI {
             return cardCode[0];
     }
 
+    compareCards(aCardCode, bCardCode) {
+        const aCardNumber = this.getCardNumberFromCode(aCardCode);
+        const bCardNumber = this.getCardNumberFromCode(bCardCode);
+        return this.compareCardNumbers(aCardNumber, bCardNumber);
+    }
+
     compareCardNumbers(aCardNum, bCardNum) {
         // Returns 0 if equal
         // Returns 1 if a is stronger
@@ -299,7 +343,8 @@ class MockAPI {
     isAttackingCardLimitReached() {
         if (this.cardsOnTable.length >= this.attackingCardsLimit)
             return true;
-        if (this.playerCards[this.playerDefending].length <= 0)
+        const numOfUndefendedCards = this.getNumOfUndefendedCards() + 1;
+        if (this.playerCards[this.playerDefending].length < numOfUndefendedCards)
             return true;
     }
 
@@ -380,6 +425,83 @@ class MockAPI {
                 return false;
         }
         return true;
+    }
+
+    getKozerCardFromDeck() {
+        let kozerCard = this.getCardFromDeck();
+        this.addKozerBackToEndOfDeck(kozerCard);
+        return kozerCard;
+    }
+
+    addKozerBackToEndOfDeck(kozerCard) {
+        this.deck = [kozerCard, ...this.deck];
+    }
+
+    isTableEmpty() {
+        return (this.cardsOnTable.length === 0);
+    }
+
+    getNumOfUndefendedCards() {
+        let counter = 0;
+        for (let cardArr of this.cardsOnTable) {
+            if (!cardArr[1])
+                counter++;
+        }
+        return counter;
+    }
+
+    isGameOver() {
+        return (this.getNumOfPlayersLeft() < 2);
+    }
+
+    handleGameOver() {
+        const numOfPlayersLeft = this.getNumOfPlayersLeft();
+        let numOfLosingPlayer = null;
+
+        if (numOfPlayersLeft === 0) {  // Draw
+            this.gameOver = true;
+            this.isDraw = true
+        }
+        else {
+            for (let [playerNum, cardsArr] of Object.entries(this.playerCards)) {
+                if (cardsArr.length > 0) {
+                    numOfLosingPlayer = playerNum;
+                    break;
+                }
+            }
+            this.gameOver = true;
+            this.isDraw = false;
+            this.losingPlayerNum = numOfLosingPlayer;
+        }
+    }
+
+    getNumOfPlayersLeft() {
+        let numOfPlayersLeft = this.numOfPlayers;
+
+        for (let cardsArr of Object.values(this.playerCards)) {
+            if (cardsArr.length === 0)
+                numOfPlayersLeft--;
+        }
+
+        return numOfPlayersLeft;
+    }
+
+    getPlayerStarting() {
+        let currentLowestCard = null;
+        let currentStartingPlayer = 1;  // Must have default for case no kozers in starting hands
+
+        for (let [playerNum, cardsInHand] of Object.entries(this.playerCards)) {
+            for (let cardInHand of cardsInHand) {
+                if (this.isCardKozer(cardInHand)) {
+                    if (!currentLowestCard  || this.compareCards(currentLowestCard, cardInHand) > 0) {
+                        currentLowestCard = cardInHand;
+                        currentStartingPlayer = playerNum;
+                    }
+                }
+            }
+        }
+
+        return parseInt(currentStartingPlayer);
     }
 }
 

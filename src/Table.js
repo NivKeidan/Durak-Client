@@ -22,7 +22,7 @@ function Table(props) {
             </div>
             <div className={"table-cards"}>
                 {props.cardsOnTable.map(
-                    (item, key) => item[1] === null ?
+                    (item, key) => item[1] === null || item[1] === "" ?
                         <Card code={item[0]} key={key}
                               selected={false}
                               onCardClick={(e) => props.handleTableCardClick(e, item[0])}/> :

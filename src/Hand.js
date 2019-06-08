@@ -17,7 +17,7 @@ function Hand(props) {
           {props.isMyTurn ?
           <div className={"player-buttons"}>
               <button className={"btn-take-cards"} onClick={() => props.takeCards()}> Take Cards </button>
-              <button className={"btn-bita"} onClick={() => props.finalizeTurn()}> Finalize Turn </button>
+              <button className={"btn-bita"} onClick={() => props.moveCardsToBita()}> Move Cards To Bita </button>
           </div> : null }
       </div>
     );

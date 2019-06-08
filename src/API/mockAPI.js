@@ -13,7 +13,7 @@ class MockAPI {
         // Game end variables
         this.gameOver = false;
         this.isDraw = false;
-        this.losingPlayerNum = null;
+        this.losingPlayerName = null;
 
         // Cards
         this.cardsOnTable = [];
@@ -50,7 +50,7 @@ class MockAPI {
 
     attack(attackObject) {
         attackObject = Object.assign({}, attackObject);  // Avoid manipulating object
-        const attackingPlayerNum = attackObject.attackingPlayerNum;
+        const attackingPlayerNum = attackObject.attackingPlayerName;
         const attackingCardCode = attackObject.attackingCardCode;
 
         return new Promise((resolve, reject) => {
@@ -91,7 +91,7 @@ class MockAPI {
 
     defend(defendObject) {
         defendObject = Object.assign({}, defendObject); // Avoid manipulating object
-        const defendingPlayerNum = defendObject.defendingPlayerNum;
+        const defendingPlayerName = defendObject.defendingPlayerName;
         const defendingCardCode = defendObject.defendingCardCode;
         const attackingCardCode = defendObject.attackingCardCode;
 
@@ -100,12 +100,12 @@ class MockAPI {
 
                 // Validations
 
-                if (!this.canPlayerDefend(defendingPlayerNum)) {
+                if (!this.canPlayerDefend(defendingPlayerName)) {
                     reject("You can not defend now");
                     return;
                 }
 
-                if (!this.doesPlayerHaveCard(defendingPlayerNum, defendingCardCode)) {
+                if (!this.doesPlayerHaveCard(defendingPlayerName, defendingCardCode)) {
                     reject("You do not have this card");
                     return;
                 }
@@ -117,7 +117,7 @@ class MockAPI {
 
                 // Perform Changes
 
-                this.removeCardFromPlayer(defendingPlayerNum, defendingCardCode);
+                this.removeCardFromPlayer(defendingPlayerName, defendingCardCode);
                 this.defendCard(attackingCardCode, defendingCardCode);
 
                 resolve({
@@ -129,12 +129,12 @@ class MockAPI {
         });
     }
 
-    takeAllCards(playerNum) {
+    takeAllCards(playerName) {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 // Validations
 
-                if (this.playerDefending !== parseInt(playerNum)) {
+                if (this.playerDefending !== parseInt(playerName)) {
                     reject("This is not your turn");
                     return;
                 }
@@ -155,7 +155,7 @@ class MockAPI {
                 }
 
                 this.cardsOnTable = [];
-                this.playerCards[playerNum] = this.playerCards[playerNum].concat(cardsToTake);
+                this.playerCards[playerName] = this.playerCards[playerName].concat(cardsToTake);
                 this.fillUpCards();
                 this.updateCardsLeftInDeck();
                 if (this.isGameOver()) {
@@ -173,7 +173,7 @@ class MockAPI {
                     playerDefending: this.playerDefending,
                     gameOver: this.gameOver,
                     isDraw: this.isDraw,
-                    losingPlayerNum: this.losingPlayerNum
+                    losingPlayerName: this.losingPlayerName
                 });
             }, delay);
         });
@@ -215,7 +215,7 @@ class MockAPI {
                     playerDefending: this.playerDefending,
                     gameOver: this.gameOver,
                     isDraw: this.isDraw,
-                    losingPlayerNum: this.losingPlayerNum})
+                    losingPlayerName: this.losingPlayerName})
             }, delay);
         })
     }
@@ -471,7 +471,7 @@ class MockAPI {
             }
             this.gameOver = true;
             this.isDraw = false;
-            this.losingPlayerNum = numOfLosingPlayer;
+            this.losingPlayerName = numOfLosingPlayer;
         }
     }
 

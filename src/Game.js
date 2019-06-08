@@ -2,7 +2,7 @@ import React from "react";
 import Hand from "./Hand";
 import "./styles/Game.css";
 import Table from "./Table";
-import MockAPI from "./API/mockAPI";
+import API from "./API/API";
 
 class Game extends React.Component {
     constructor(props) {
@@ -10,14 +10,14 @@ class Game extends React.Component {
         this.handleCardClicked = this.handleCardClicked.bind(this);
         this.handleTableClick = this.handleTableClick.bind(this);
         this.handleTableCardClick = this.handleTableCardClick.bind(this);
-        this.handleFinalizeTurn = this.handleFinalizeTurn.bind(this);
+        this.handleMoveCardsToBita = this.handleMoveCardsToBita.bind(this);
 
         this.state = {
             playerPositions: {1: "top", 2: "left", 3: "bottom", 4: "right"},
             cardSelected: {playerNum: null, cardCode: null},
             numOfPlayers: 4,
-            playerStarting: 1,
-            playerDefending: 2,
+                playerStarting: null,
+            playerDefending: null,
             playerCards: {
                 1: [],
                 2: [],
@@ -28,7 +28,7 @@ class Game extends React.Component {
             kozerCard: null,
             numOfCardsLeftInDeck: null
         };
-        this.API = new MockAPI();
+        this.API = new API();
     };
 
     componentDidMount() {
@@ -39,24 +39,24 @@ class Game extends React.Component {
 
     startGameAPI() {
         this.API.startGame().then(
-            (partialState) => {
-                this.setState({...partialState});
+            (result) => {
+                this.setState({...result});
             },
             function failed() {
             });
     }
 
-    takeCards(playerNum) {
+    takeCards(playerName) {
 
         // Validate this is player's turn
-        if (this.state.playerDefending !== parseInt(playerNum))
+        if (this.state.playerDefending !== playerName)
             return;
 
         // Validate cards on table
         if (this.state.cardsOnTable.length === 0)
             return;
 
-        this.API.takeAllCards(playerNum).then(
+        this.API.takeAllCards(playerName).then(
             (partialState) => {
                 this.setState({...partialState})
             },
@@ -65,8 +65,37 @@ class Game extends React.Component {
             });
     }
 
-    handleFinalizeTurn() {
-        this.API.finalizeTurn().then(
+    attack(playerName, cardCode) {
+        this.API.attack({
+            attackingPlayerName: playerName,
+            attackingCardCode: cardCode
+        }).then(
+            ({playerCards, cardsOnTable}) => {
+
+                this.setState((prevState) => {
+
+                    // Un-select card if needed
+                    let cardSelected = Object.assign({}, prevState.cardSelected);
+                    if (prevState.cardSelected.cardCode === cardCode) {
+                        Object.keys(cardSelected).map(
+                            (item, key) => cardSelected[item] = null);
+                    }
+
+                    return ({
+                        cardSelected,
+                        cardsOnTable,
+                        playerCards,
+                    });
+                });
+            },
+
+            function failed(errorMsg) {
+                console.log(errorMsg);
+            })
+    }
+
+    handleMoveCardsToBita() {
+        this.API.moveCardsToBita().then(
             (partialState) => {
                 this.setState({...partialState});
             },
@@ -87,32 +116,8 @@ class Game extends React.Component {
             // VALIDATION: Check that the player has this card
             // VALIDATION: Check that this card can be added now
 
-            this.API.attack({
-                attackingPlayerNum: selectedCardPlayerNum,
-                attackingCardCode: selectedCardCode
-            }).then(
-                ({playerCards, cardsOnTable}) => {
+            this.attack(selectedCardPlayerNum, selectedCardCode)
 
-                    this.setState((prevState) => {
-
-                        // Un-select card if needed
-                        let cardSelected = Object.assign({}, prevState.cardSelected);
-                        if (prevState.cardSelected.cardCode === selectedCardCode) {
-                            Object.keys(cardSelected).map(
-                                (item, key) => cardSelected[item] = null);
-                        }
-
-                        return ({
-                            cardSelected,
-                            cardsOnTable,
-                            playerCards,
-                        });
-                    });
-                },
-
-                function failed(errorMsg) {
-                    console.log(errorMsg);
-                })
         }
     }
 
@@ -144,7 +149,7 @@ class Game extends React.Component {
             // Validate this card can defend
 
             this.API.defend({
-                defendingPlayerNum: selectedCardPlayerNum,
+                defendingPlayerName: selectedCardPlayerNum,
                 defendingCardCode: selectedCardCode, attackingCardCode: tableCardCode
             }).then(
                 ({playerCards, cardsOnTable}) => {
@@ -186,8 +191,8 @@ class Game extends React.Component {
                                          null}
                                      cardOnClick={this.handleCardClicked}
                                      takeCards={() => this.takeCards(item)}
-                                     isMyTurn={parseInt(item) === this.state.playerDefending}
-                                     finalizeTurn={this.handleFinalizeTurn}/>))
+                                     isMyTurn={item === this.state.playerDefending}
+                                     moveCardsToBita={this.handleMoveCardsToBita}/>))
     };
 
     renderTable() {

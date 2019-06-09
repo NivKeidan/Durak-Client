@@ -50,7 +50,7 @@ class MockAPI {
 
     attack(attackObject) {
         attackObject = Object.assign({}, attackObject);  // Avoid manipulating object
-        const attackingPlayerNum = attackObject.attackingPlayerName;
+        const attackingPlayerName = attackObject.attackingPlayerName;
         const attackingCardCode = attackObject.attackingCardCode;
 
         return new Promise((resolve, reject) => {
@@ -58,12 +58,12 @@ class MockAPI {
 
                 // Validations
 
-                if (!this.canPlayerAttack(attackingPlayerNum)) {
+                if (!this.canPlayerAttack(attackingPlayerName)) {
                     reject("You can not attack now");
                     return;
                 }
 
-                if (!this.doesPlayerHaveCard(attackingPlayerNum, attackingCardCode)) {
+                if (!this.doesPlayerHaveCard(attackingPlayerName, attackingCardCode)) {
                     reject("You do not have this card");
                     return;
                 }
@@ -79,7 +79,7 @@ class MockAPI {
                 }
 
                 this.cardsOnTable.push([attackingCardCode, null]);
-                this.removeCardFromPlayer(attackingPlayerNum, attackingCardCode);
+                this.removeCardFromPlayer(attackingPlayerName, attackingCardCode);
 
                 resolve({
                     playerCards: cloneDeep(this.playerCards),
@@ -248,14 +248,14 @@ class MockAPI {
         return cardArray;
     }
 
-    canPlayerAttack(attackingPlayerNum) {
+    canPlayerAttack(attackingPlayerName) {
         return (
-            (this.cardsOnTable.length === 0 && parseInt(attackingPlayerNum) === this.playerStarting) ||
-            (this.cardsOnTable.length !== 0 && parseInt(attackingPlayerNum) !== this.playerDefending) );
+            (this.cardsOnTable.length === 0 && attackingPlayerName === this.playerStarting) ||
+            (this.cardsOnTable.length !== 0 && attackingPlayerName !== this.playerDefending) );
     }
 
-    doesPlayerHaveCard(attackingPlayerNum, attackingCardCode) {
-        return this.playerCards[attackingPlayerNum].indexOf(attackingCardCode) !== -1;
+    doesPlayerHaveCard(attackingPlayerName, attackingCardCode) {
+        return this.playerCards[attackingPlayerName].indexOf(attackingCardCode) !== -1;
     }
 
     canThisCardBeAdded(attackingCardCode) {
@@ -277,8 +277,8 @@ class MockAPI {
         return false;
     }
 
-    canPlayerDefend(defendingPlayerNum) {
-        return (this.playerDefending === parseInt(defendingPlayerNum));
+    canPlayerDefend(defendingPlayerName) {
+        return (this.playerDefending === defendingPlayerName);
     }
 
     canDefendWithCard(defendingCardCode, attackingCardCode) {
@@ -320,9 +320,9 @@ class MockAPI {
 
     }
 
-    removeCardFromPlayer(playerNum, cardCode) {
-        const cardIndex = this.playerCards[playerNum].indexOf(cardCode);
-        this.playerCards[playerNum].splice(cardIndex, 1);
+    removeCardFromPlayer(playerName, cardCode) {
+        const cardIndex = this.playerCards[playerName].indexOf(cardCode);
+        this.playerCards[playerName].splice(cardIndex, 1);
     }
 
     defendCard(attackingCardCode, defendingCardCode) {
@@ -381,12 +381,12 @@ class MockAPI {
         return this.playerDefending;
     }
 
-    fillUpCardsForPlayer(playerNum) {
-        while (this.playerCards[playerNum].length < this.startingCardsNum) {
+    fillUpCardsForPlayer(playerName) {
+        while (this.playerCards[playerName].length < this.startingCardsNum) {
             if (this.deck.length === 0)
                 return;
             const newCard = this.getCardFromDeck();
-            this.playerCards[playerNum].push(newCard);
+            this.playerCards[playerName].push(newCard);
         }
     }
 
@@ -403,8 +403,8 @@ class MockAPI {
         this.numOfCardsLeftInDeck = this.deck.length;
     }
 
-    doesPlayerHaveCards(playerNum) {
-        return (this.playerCards[playerNum].length > 0);
+    doesPlayerHaveCards(playerName) {
+        return (this.playerCards[playerName].length > 0);
     }
 
     setUpNextTurn(lastTurnDefended=true) {
@@ -463,9 +463,9 @@ class MockAPI {
             this.isDraw = true
         }
         else {
-            for (let [playerNum, cardsArr] of Object.entries(this.playerCards)) {
+            for (let [playerName, cardsArr] of Object.entries(this.playerCards)) {
                 if (cardsArr.length > 0) {
-                    numOfLosingPlayer = playerNum;
+                    numOfLosingPlayer = playerName;
                     break;
                 }
             }
@@ -490,12 +490,12 @@ class MockAPI {
         let currentLowestCard = null;
         let currentStartingPlayer = 1;  // Must have default for case no kozers in starting hands
 
-        for (let [playerNum, cardsInHand] of Object.entries(this.playerCards)) {
+        for (let [playerName, cardsInHand] of Object.entries(this.playerCards)) {
             for (let cardInHand of cardsInHand) {
                 if (this.isCardKozer(cardInHand)) {
                     if (!currentLowestCard  || this.compareCards(currentLowestCard, cardInHand) > 0) {
                         currentLowestCard = cardInHand;
-                        currentStartingPlayer = playerNum;
+                        currentStartingPlayer = playerName;
                     }
                 }
             }

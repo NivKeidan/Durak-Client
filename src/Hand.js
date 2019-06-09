@@ -6,12 +6,12 @@ function Hand(props) {
     return (
       <div className={"hand hand-" + props.position}>
           <div className={"playerHeader"}>
-              Player {props.playerNum}
+              {props.playerName}
           </div>
           <div className={"handCards"}>
               {props.cards.map(
                   (item, key) => <Card key={key} code={item}
-                                       onCardClick={() => props.cardOnClick(props.playerNum, item)}
+                                       onCardClick={() => props.cardOnClick(props.playerName, item)}
                                        selected={props.cardSelected === item}/>)}
           </div>
           {props.isMyTurn ?

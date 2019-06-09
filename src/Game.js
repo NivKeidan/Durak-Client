@@ -13,10 +13,10 @@ class Game extends React.Component {
         this.handleMoveCardsToBita = this.handleMoveCardsToBita.bind(this);
 
         this.state = {
+            cardSelected: {playerName: null, cardCode: null},
             playerPositions: {1: "top", 2: "left", 3: "bottom", 4: "right"},
-            cardSelected: {playerNum: null, cardCode: null},
             numOfPlayers: 4,
-                playerStarting: null,
+            playerStarting: null,
             playerDefending: null,
             playerCards: {
                 1: [],
@@ -40,7 +40,8 @@ class Game extends React.Component {
     startGameAPI() {
         this.API.startGame().then(
             (result) => {
-                this.setState({...result});
+                let playerPositions = this.getPlayerPositions(result);
+                this.setState({...result, playerPositions});
             },
             function failed() {
             });
@@ -108,7 +109,7 @@ class Game extends React.Component {
 
     handleTableClick() {
 
-        const selectedCardPlayerNum = this.state.cardSelected.playerNum;
+        const selectedCardPlayerName = this.state.cardSelected.playerName;
         const selectedCardCode = this.state.cardSelected.cardCode;
 
         if (selectedCardCode) {
@@ -116,30 +117,30 @@ class Game extends React.Component {
             // VALIDATION: Check that the player has this card
             // VALIDATION: Check that this card can be added now
 
-            this.attack(selectedCardPlayerNum, selectedCardCode)
+            this.attack(selectedCardPlayerName, selectedCardCode)
 
         }
     }
 
-    handleCardClicked(playerNum, cardCode) {
+    handleCardClicked(playerName, cardCode) {
         this.setState((prevState) => {
 
             // Cancel if selected card is clicked again
-            if (playerNum === prevState.cardSelected.playerNum &&
+            if (playerName === prevState.cardSelected.playerName &&
                 cardCode === prevState.cardSelected.cardCode) {
-                playerNum = null;
+                playerName = null;
                 cardCode = null;
             }
 
             // Update state
-            return {cardSelected: {playerNum, cardCode}};
+            return {cardSelected: {playerName, cardCode}};
         });
     }
 
     handleTableCardClick(e, tableCardCode) {
         e.stopPropagation();  // Stops table click from happening
 
-        const selectedCardPlayerNum = this.state.cardSelected.playerNum;
+        const selectedCardPlayerName = this.state.cardSelected.playerName;
         const selectedCardCode = this.state.cardSelected.cardCode;
 
         if (selectedCardCode) {
@@ -149,7 +150,7 @@ class Game extends React.Component {
             // Validate this card can defend
 
             this.API.defend({
-                defendingPlayerName: selectedCardPlayerNum,
+                defendingPlayerName: selectedCardPlayerName,
                 defendingCardCode: selectedCardCode, attackingCardCode: tableCardCode
             }).then(
                 ({playerCards, cardsOnTable}) => {
@@ -182,10 +183,10 @@ class Game extends React.Component {
         return (
             Object.keys(this.state.playerPositions).map(
                 (item, key) => <Hand key={key}
-                                     playerNum={item}
+                                     playerName={item}
                                      position={this.state.playerPositions[item]}
                                      cards={this.state.playerCards[item]}
-                                     cardSelected={this.state.cardSelected.playerNum === item ?
+                                     cardSelected={this.state.cardSelected.playerName === item ?
                                          this.state.cardSelected.cardCode
                                          :
                                          null}
@@ -212,6 +213,15 @@ class Game extends React.Component {
         );
     };
 
+    getPlayerPositions(result) {
+        console.log(result);
+        let playerNames = Object.keys(result.playerCards);
+        const positions = ["top", "left", "bottom", "right"];
+        let playerPositions = {};
+        for (let i = 0; i < this.state.numOfPlayers; i++)
+            playerPositions[playerNames[i]] = positions[i];
+        return playerPositions;
+    }
 }
 
 export default Game;

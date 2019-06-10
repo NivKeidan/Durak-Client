@@ -6,9 +6,17 @@ const moveCardsToBita = "/moveCardsToBita";
 const takeCards = "/takeCards";
 
 class API {
-    startGame() {
+    startGame(optionsObject) {
         return new Promise ( (resolve, reject) => {
-                fetch(host + startGame).then(
+                fetch(host + startGame, {
+                    method: 'POST',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(optionsObject)
+                }).then(
                     (res) =>
                         handleResponse(resolve, reject, res)
                 ).catch((err) =>

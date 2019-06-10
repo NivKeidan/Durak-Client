@@ -14,7 +14,7 @@ class Game extends React.Component {
         this.state = {
             cardSelected: {playerName: null, cardCode: null},
             playerPositions: {1: "top", 2: "left", 3: "bottom", 4: "right"},
-            numOfPlayers: 4,
+            numOfPlayers: props.numOfPlayers,
             playerStarting: null,
             playerDefending: null,
             playerCards: {
@@ -37,7 +37,7 @@ class Game extends React.Component {
     // API Calls
 
     startGameAPI() {
-        this.props.API.startGame().then(
+        this.props.API.startGame({numOfPlayers: this.state.numOfPlayers}).then(
             (result) => {
                 let playerPositions = this.getPlayerPositions(result);
                 this.setState({...result, playerPositions});

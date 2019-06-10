@@ -13,13 +13,15 @@ class App extends React.Component {
 
         this.state = {
             // Add options here, or go down to menu
-            isGameRunning: false
+            isGameRunning: false,
         };
         this.API = new API();
     }
 
-    startNewGame() {
-        this.setState({isGameRunning: true});
+    startNewGame(numOfPlayers) {
+        this.setState({
+            numOfPlayers,
+            isGameRunning: true});
     }
 
     render() {
@@ -27,7 +29,7 @@ class App extends React.Component {
         <div className="App">
             <Menu isGameRunning={this.state.isGameRunning}
                   startNewGame={this.startNewGame}/>
-            {this.state.isGameRunning ? <Game API={this.API}/> : null }
+            {this.state.isGameRunning ? <Game API={this.API} numOfPlayers={this.state.numOfPlayers}/> : null }
         </div>
     )};
 }

@@ -43,7 +43,8 @@ class Game extends React.Component {
                 let playerPositions = this.getPlayerPositions(result);
                 this.setState({...result, playerPositions});
             },
-            function failed() {
+            function failed(err) {
+                console.log(err.message);
             });
     }
 
@@ -61,8 +62,8 @@ class Game extends React.Component {
             (partialState) => {
                 this.setState({...partialState})
             },
-            function failed(errorMsg) {
-                console.log(errorMsg);
+            function failed(err) {
+                console.log(err.message);
             });
     }
 
@@ -90,8 +91,8 @@ class Game extends React.Component {
                 });
             },
 
-            function failed(errorMsg) {
-                console.log(errorMsg);
+            function failed(err) {
+                console.log(err.message);
             })
     }
 
@@ -100,8 +101,8 @@ class Game extends React.Component {
             (partialState) => {
                 this.setState({...partialState});
             },
-            function failed(errorMsg) {
-                console.log(errorMsg);
+            function failed(err) {
+                console.log(err.message);
             });
     }
 
@@ -214,7 +215,6 @@ class Game extends React.Component {
     };
 
     getPlayerPositions(result) {
-        console.log(result);
         let playerNames = Object.keys(result.playerCards);
         const positions = ["top", "left", "bottom", "right"];
         let playerPositions = {};

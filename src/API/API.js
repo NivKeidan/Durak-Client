@@ -7,56 +7,93 @@ const takeCards = "/takeCards";
 
 class API {
     startGame() {
-        return fetch(host + startGame).then((res) => {return res.json();});
+        return new Promise ( (resolve, reject) => {
+                fetch(host + startGame).then(
+                    (res) =>
+                        handleResponse(resolve, reject, res)
+                ).catch((err) =>
+                    handleError(reject, err))
+            });
     }
 
     attack(attackObject) {
-        return fetch(host + attack, {
-            method: 'POST',
-            mode: 'cors',
-            cache: 'no-cache',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(attackObject)
-        }).then((res) => {return res.json()});
+        return new Promise( (resolve, reject) => {
+            fetch(host + attack, {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(attackObject)
+            }).then( (res) =>
+                handleResponse(resolve, reject, res)
+            ).catch( (err) =>
+                handleError(reject, err))
+        });
     }
 
     defend(defendObject) {
-        return fetch(host + defend, {
-            method: 'POST',
-            mode: 'cors',
-            cache: 'no-cache',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(defendObject)
-        }).then( (res) => {return res.json()});
+        return new Promise((resolve, reject) => {
+            fetch(host + defend, {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(defendObject)
+            }).then( (res) =>
+                handleResponse(resolve, reject, res)
+            ).catch( (err) =>
+                handleError(reject, err))
+        });
     }
 
     moveCardsToBita(moveCardsToBitaObject) {
-        return fetch(host + moveCardsToBita, {
-            method: 'POST',
-            mode: 'cors',
-            cache: 'no-cache',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(moveCardsToBitaObject)
-        }).then( (res) => {return res.json()});
-    };
+        return new Promise( (resolve, reject) => {
+            fetch(host + moveCardsToBita, {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(moveCardsToBitaObject)
+            }).then( (res) =>
+                handleResponse(resolve, reject, res)
+            ).catch( (err) =>
+                handleError(reject, err))
+        });
+    }
 
     takeAllCards(takeCardsObject) {
-        return fetch(host + takeCards, {
-            method: 'POST',
-            mode: 'cors',
-            cache: 'no-cache',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(takeCardsObject)
-        }).then( (res) => {return res.json()});
-    };
+        return new Promise( (resolve, reject) => {
+            fetch(host + takeCards, {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(takeCardsObject)
+            }).then( (res) =>
+                handleResponse(resolve, reject, res)
+            ).catch( (err) =>
+                handleError(reject, err))
+        });
+    }
+}
+
+function handleError(reject, err) {
+    return reject({message: err.message});
+}
+
+function handleResponse(resolve, reject, res) {
+    if (res.ok)
+        res.json().then((json) => {return resolve(json)});
+    else
+        res.json().then((json) => {return reject(json)});
 }
 
 export default API;

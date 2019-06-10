@@ -1,6 +1,15 @@
 .game {
+    left: 15%;
+    margin-left: 10px;
     grid-template-rows: [verstart] 25% [ver1] 50% [ver2] 25% [verend];
     grid-template-columns: [horstart] 25% [hor1] 50% [hor2] 25% [horend];
-    display: grid;
-    /*position: relative;*/
+    display: inline-grid;
+    position: absolute;
+}
+
+.btn-restart-game {
+    grid-column: 1;
+    grid-row: 1;
+    font-size: 40px;
+
 }

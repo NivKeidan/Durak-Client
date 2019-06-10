@@ -2,7 +2,6 @@ import React from "react";
 import Hand from "./Hand";
 import "./styles/Game.css";
 import Table from "./Table";
-import API from "./API/API";
 
 class Game extends React.Component {
     constructor(props) {
@@ -28,7 +27,7 @@ class Game extends React.Component {
             kozerCard: null,
             numOfCardsLeftInDeck: null
         };
-        this.API = new API();
+        
     };
 
     componentDidMount() {
@@ -38,7 +37,7 @@ class Game extends React.Component {
     // API Calls
 
     startGameAPI() {
-        this.API.startGame().then(
+        this.props.API.startGame().then(
             (result) => {
                 let playerPositions = this.getPlayerPositions(result);
                 this.setState({...result, playerPositions});
@@ -58,7 +57,7 @@ class Game extends React.Component {
         if (this.state.cardsOnTable.length === 0)
             return;
 
-        this.API.takeAllCards(playerName).then(
+        this.props.API.takeAllCards(playerName).then(
             (partialState) => {
                 this.setState({...partialState})
             },
@@ -68,7 +67,7 @@ class Game extends React.Component {
     }
 
     attack(playerName, cardCode) {
-        this.API.attack({
+        this.props.API.attack({
             attackingPlayerName: playerName,
             attackingCardCode: cardCode
         }).then(
@@ -97,7 +96,7 @@ class Game extends React.Component {
     }
 
     handleMoveCardsToBita() {
-        this.API.moveCardsToBita().then(
+        this.props.API.moveCardsToBita().then(
             (partialState) => {
                 this.setState({...partialState});
             },
@@ -150,7 +149,7 @@ class Game extends React.Component {
             // Validate its player's turn
             // Validate this card can defend
 
-            this.API.defend({
+            this.props.API.defend({
                 defendingPlayerName: selectedCardPlayerName,
                 defendingCardCode: selectedCardCode, attackingCardCode: tableCardCode
             }).then(
@@ -205,9 +204,16 @@ class Game extends React.Component {
                    cardsLeftInDeck={this.state.numOfCardsLeftInDeck}/>);
     }
 
+    renderRestartGameButton() {
+        return (
+            <button className={"btn-restart-game"} onClick={() => this.startGameAPI()}> Restart </button>
+        )
+    }
+
     render() {
         return (
             <div className="game">
+                {this.renderRestartGameButton()}
                 {this.renderHands()}
                 {this.renderTable()}
             </div>

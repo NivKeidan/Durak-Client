@@ -15,8 +15,9 @@ class Menu extends React.Component {
 
     }
 
-    handleSubmit() {
+    handleSubmit(e) {
         this.props.startNewGame(this.state.numOfPlayers)
+        e.preventDefault();
     }
 
     handlePlayerNumChange(e) {

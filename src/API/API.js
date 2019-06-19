@@ -1,14 +1,16 @@
 const host = "http://localhost:8080";
-const startGame = "/startGame";
+const createGame = "/createGame";
+const joinGame = "/joinGame";
+const getGameStatus = "/gameStatus";
 const attack = "/attack";
 const defend = "/defend";
 const moveCardsToBita = "/moveCardsToBita";
 const takeCards = "/takeCards";
 
 class API {
-    startGame(optionsObject) {
+    createGame(optionsObject) {
         return new Promise ( (resolve, reject) => {
-                fetch(host + startGame, {
+                fetch(host + createGame, {
                     method: 'POST',
                     mode: 'cors',
                     cache: 'no-cache',
@@ -88,6 +90,16 @@ class API {
             }).then( (res) =>
                 handleResponse(resolve, reject, res)
             ).catch( (err) =>
+                handleError(reject, err))
+        });
+    }
+
+    getCurrentGameStatus() {
+        return new Promise ( (resolve, reject) => {
+            fetch(host + getGameStatus).then(
+                (res) =>
+                    handleResponse(resolve, reject, res)
+            ).catch((err) =>
                 handleError(reject, err))
         });
     }

@@ -30,22 +30,22 @@ class Game extends React.Component {
         
     };
 
-    componentDidMount() {
-        this.startGameAPI();
-    }
-
-    // API Calls
-
-    startGameAPI() {
-        this.props.API.startGame({numOfPlayers: this.state.numOfPlayers}).then(
-            (result) => {
-                let playerPositions = this.getPlayerPositions(result);
-                this.setState({...result, playerPositions});
-            },
-            function failed(err) {
-                console.log(err.message);
-            });
-    }
+    // componentDidMount() {
+    //     this.startGameAPI();
+    // }
+    //
+    // // API Calls
+    //
+    // startGameAPI() {
+    //     this.props.API.createGame({numOfPlayers: this.state.numOfPlayers}).then(
+    //         (result) => {
+    //             let playerPositions = this.getPlayerPositions(result);
+    //             this.setState({...result, playerPositions});
+    //         },
+    //         function failed(err) {
+    //             console.log(err.message);
+    //         });
+    // }
 
     takeCards(playerName) {
 

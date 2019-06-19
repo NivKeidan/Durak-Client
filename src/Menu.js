@@ -6,20 +6,29 @@ class Menu extends React.Component {
     constructor(props) {
         super(props);
 
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleCreateGameSubmit = this.handleCreateGameSubmit.bind(this);
         this.handlePlayerNumChange = this.handlePlayerNumChange.bind(this);
         this.renderCreateGameMenu = this.renderCreateGameMenu.bind(this);
         this.renderJoinGameMenu = this.renderJoinGameMenu.bind(this);
         this.renderGameInProgressMenu = this.renderGameInProgressMenu.bind(this);
+        this.handlePlayerNameChange = this.handlePlayerNameChange.bind(this);
+        this.getRandomPlayerName = this.getRandomPlayerName.bind(this);
+        this.handleJoinGameSubmit = this.handleJoinGameSubmit.bind(this);
 
         this.state = {
-            numOfPlayers: 4
+            numOfPlayers: 4,
+            playerName: this.getRandomPlayerName()
         };
 
     }
 
-    handleSubmit(e) {
+    handleCreateGameSubmit(e) {
         this.props.createNewGame(this.state.numOfPlayers);
+        e.preventDefault();
+    }
+
+    handleJoinGameSubmit(e) {
+        this.props.joinGame(this.state.playerName);
         e.preventDefault();
     }
 
@@ -27,10 +36,14 @@ class Menu extends React.Component {
         this.setState({numOfPlayers: parseInt(e.target.value)});
     }
 
+    handlePlayerNameChange(e) {
+        this.setState({playerName: e.target.value});
+    }
+
     renderCreateGameMenu() {
         return (
             <div className={"menu-options"}>
-                <form onSubmit={this.handleSubmit}>
+                <form onSubmit={this.handleCreateGameSubmit}>
                     <label> Number of players:
                         <select value={this.state.numOfPlayers} onChange={this.handlePlayerNumChange}>
                             <option value="2">2</option>
@@ -46,8 +59,14 @@ class Menu extends React.Component {
 
     renderJoinGameMenu() {
         return (
-            <div>
-                Add form for joining game
+            <div className={"menu-join-game"}>
+                <form onSubmit={this.handleJoinGameSubmit} >
+                    <label>Player Name:
+                        <input type="text" value={this.state.playerName}
+                               onChange={this.handlePlayerNameChange} />
+                    </label>
+                    <input className={"btn-join-game"} type="submit" value="Join Game"/>
+                </form>
             </div>
         )
     }
@@ -69,6 +88,11 @@ class Menu extends React.Component {
                 }
             </div>
         )}
+
+    getRandomPlayerName() {
+        // TODO Upgrade random naming
+        return "Guest1237";
+    }
 }
 
 export default Menu;

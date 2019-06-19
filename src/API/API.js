@@ -26,6 +26,24 @@ class API {
             });
     }
 
+    joinGame(optionsObject) {
+        return new Promise ( (resolve, reject) => {
+            fetch(host + joinGame, {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(optionsObject)
+            }).then(
+                (res) =>
+                    handleResponse(resolve, reject, res)
+            ).catch((err) =>
+                handleError(reject, err))
+        });
+    }
+
     attack(attackObject) {
         return new Promise( (resolve, reject) => {
             fetch(host + attack, {

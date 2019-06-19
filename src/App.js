@@ -48,8 +48,14 @@ class App extends React.Component {
             });
     }
 
-    joinGame() {
-        // TODO Handle join game
+    joinGame(playerName) {
+        this.API.joinGame({playerName}).then(
+            () => {
+                // Register event source here
+            },
+            function failed(err) {
+                console.log(err.message);
+            });
     }
 
     render() {

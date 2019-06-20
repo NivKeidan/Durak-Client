@@ -14,6 +14,8 @@ class Menu extends React.Component {
         this.handlePlayerNameChange = this.handlePlayerNameChange.bind(this);
         this.getRandomPlayerName = this.getRandomPlayerName.bind(this);
         this.handleJoinGameSubmit = this.handleJoinGameSubmit.bind(this);
+        this.renderWaitingForPlayersMenu = this.renderWaitingForPlayersMenu.bind(this);
+        this.handleLeaveGameSubmit = this.handleLeaveGameSubmit.bind(this);
 
         this.state = {
             numOfPlayers: 4,
@@ -40,6 +42,11 @@ class Menu extends React.Component {
         this.setState({playerName: e.target.value});
     }
 
+    handleLeaveGameSubmit(e) {
+        this.props.leaveGame(this.state.playerName);
+        e.preventDefault();
+    }
+
     renderCreateGameMenu() {
         return (
             <div className={"menu-options"}>
@@ -51,7 +58,7 @@ class Menu extends React.Component {
                             <option value="4">4</option>
                         </select>
                     </label>
-                    <input className={"btn-start-game"} type="submit" value="Start Game"/>
+                    <input className={"menu-btn btn-create-game"} type="submit" value="Create Game"/>
                 </form>
             </div>
         )
@@ -65,7 +72,17 @@ class Menu extends React.Component {
                         <input type="text" value={this.state.playerName}
                                onChange={this.handlePlayerNameChange} />
                     </label>
-                    <input className={"btn-join-game"} type="submit" value="Join Game"/>
+                    <input className={"menu-btn btn-join-game"} type="submit" value="Join Game"/>
+                </form>
+            </div>
+        )
+    }
+
+    renderWaitingForPlayersMenu() {
+        return (
+            <div className={"menu-wait-for-players"}>
+                <form onSubmit={this.handleLeaveGameSubmit}>
+                    <input className={"menu-btn btn-leave-game"} type="submit" value="Leave Game"/>
                 </form>
             </div>
         )
@@ -83,7 +100,8 @@ class Menu extends React.Component {
                 <h2><u>Menu</u></h2>
                 {this.props.isGameCreated ?
                     this.props.isGameRunning ?
-                        this.renderGameInProgressMenu() : this.renderJoinGameMenu()
+                        this.renderGameInProgressMenu() : this.props.isUserJoined ?
+                            this.renderWaitingForPlayersMenu() : this.renderJoinGameMenu()
                     : this.renderCreateGameMenu()
                 }
             </div>

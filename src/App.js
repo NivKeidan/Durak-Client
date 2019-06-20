@@ -12,11 +12,13 @@ class App extends React.Component {
         this.createNewGame = this.createNewGame.bind(this);
         this.joinGame = this.joinGame.bind(this);
         this.getGameStatus = this.getGameStatus.bind(this);
+        this.leaveGame = this.leaveGame.bind(this);
 
         this.state = {
             // Add options here, or go down to menu
             isGameRunning: false,
-            isGameCreated: false
+            isGameCreated: false,
+            isUserJoined: false
         };
         this.API = new API();
     }
@@ -51,7 +53,24 @@ class App extends React.Component {
     joinGame(playerName) {
         this.API.joinGame({playerName}).then(
             () => {
-                // Register event source here
+                this.setState({isUserJoined: true})
+                // TODO Register event source here
+            },
+            function failed(err) {
+                console.log(err.message);
+            });
+    }
+
+    leaveGame(playerName) {
+        this.API.leaveGame({playerName}).then(
+            () => {
+                this.setState({
+                    isGameRunning: false,
+                    isGameCreated: false,
+                    isUserJoined: false
+                });
+                // TODO Unregister event source here
+                this.getGameStatus();
             },
             function failed(err) {
                 console.log(err.message);
@@ -63,8 +82,10 @@ class App extends React.Component {
         <div className="App">
             <Menu isGameRunning={this.state.isGameRunning}
                   isGameCreated={this.state.isGameCreated}
+                  isUserJoined={this.state.isUserJoined}
                   createNewGame={this.createNewGame}
-                  joinGame={this.joinGame}/>
+                  joinGame={this.joinGame}
+                  leaveGame={this.leaveGame}/>
             {this.state.isGameRunning ? <Game API={this.API} numOfPlayers={this.state.numOfPlayers}/> : null }
         </div>
     )};

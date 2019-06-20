@@ -4,14 +4,7 @@
     border: 1px solid black;
 }
 
-.btn-start-game {
-    margin-top: 25%;
-    margin-bottom: 10px;
-    width: 80%;
-    font-size: 25px;
-}
-
-.btn-join-game {
+.menu-btn {
     margin-top: 25%;
     margin-bottom: 10px;
     width: 80%;

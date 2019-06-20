@@ -6,6 +6,7 @@ const attack = "/attack";
 const defend = "/defend";
 const moveCardsToBita = "/moveCardsToBita";
 const takeCards = "/takeCards";
+const leaveGame = "/leaveGame";
 
 class API {
     createGame(optionsObject) {
@@ -29,6 +30,24 @@ class API {
     joinGame(optionsObject) {
         return new Promise ( (resolve, reject) => {
             fetch(host + joinGame, {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(optionsObject)
+            }).then(
+                (res) =>
+                    handleResponse(resolve, reject, res)
+            ).catch((err) =>
+                handleError(reject, err))
+        });
+    }
+
+    leaveGame(optionsObject) {
+        return new Promise ( (resolve, reject) => {
+            fetch(host + leaveGame, {
                 method: 'POST',
                 mode: 'cors',
                 cache: 'no-cache',

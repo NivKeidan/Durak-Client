@@ -1,6 +1,7 @@
 // TODO Move this to proper config file
 export const host = "http://localhost:8080";
-export const sseEndpoint = "/eventSource";
+export const appStream = "/appStream";
+export const gameStream = "/gameStream";
 const createGame = "/createGame";
 const joinGame = "/joinGame";
 const attack = "/attack";

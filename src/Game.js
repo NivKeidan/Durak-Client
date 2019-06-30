@@ -2,6 +2,7 @@ import React from "react";
 import Hand from "./Hand";
 import "./styles/Game.css";
 import Table from "./Table";
+import { host } from "./API/API";
 
 class Game extends React.Component {
     constructor(props) {
@@ -38,9 +39,9 @@ class Game extends React.Component {
     // Lifecycle
 
     componentDidMount() {
-        this.props.eventSource.addEventListener('gameupdated', this.handleEventGameUpdated);
-        this.props.eventSource.addEventListener('gamestarted', this.handleEventGameStarted);
-        this.props.eventSource.addEventListener('gamerestarted', this.handleEventGameUpdated);
+        this.props.appStream.addEventListener('gameupdated', this.handleEventGameUpdated);
+        this.props.appStream.addEventListener('gamestarted', this.handleEventGameStarted);
+        this.props.appStream.addEventListener('gamerestarted', this.handleEventGameUpdated);
     }
 
     // SSE

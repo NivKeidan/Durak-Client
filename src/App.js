@@ -3,7 +3,7 @@ import './styles/App.css';
 import Game from "./Game";
 import Menu from "./Menu";
 import API from "./API/API";
-import { host, sseEndpoint } from "./API/API";
+import { host, appStream, gameStream } from "./API/API";
 
 class App extends React.Component {
     constructor(props) {
@@ -28,8 +28,8 @@ class App extends React.Component {
 
     componentDidMount() {
         this.API = new API();
-        this.eventSource = new EventSource(host + sseEndpoint);
-        this.eventSource.addEventListener('gamecreated', this.handleIncomingSSE);
+        this.appStream = new EventSource(host + appStream);
+        this.appStream.addEventListener('gamecreated', this.handleIncomingSSE);
     }
 
     // SSE
@@ -41,12 +41,17 @@ class App extends React.Component {
         this.setState(JSON.parse(e.data));
     }
 
+    connectToGameStream(res) {
+        this.gameStream = new EventSource(host + gameStream + '?id=' + res.idCode)
+    }
+
     // API Actions
 
     createNewGame(numOfPlayers, playerName) {
         this.API.createGame({numOfPlayers: numOfPlayers, playerName}).then(
-            () => {
-                this.setState({isUserJoined: true})
+            (res) => {
+                this.setState({isUserJoined: true});
+                this.connectToGameStream(res);
             },
             function failed(err) {
                 console.log(err.message);
@@ -55,8 +60,9 @@ class App extends React.Component {
 
     joinGame(playerName) {
         this.API.joinGame({playerName}).then(
-            () => {
-                this.setState({isUserJoined: true})
+            (res) => {
+                this.setState({isUserJoined: true});
+                this.connectToGameStream(res);
             },
             function failed(err) {
                 console.log(err.message);
@@ -84,7 +90,7 @@ class App extends React.Component {
                   createNewGame={this.createNewGame}
                   joinGame={this.joinGame}
                   leaveGame={this.leaveGame}/>
-            {this.state.isGameRunning ? <Game API={this.API} eventSource={this.eventSource}/> : null }
+            {this.state.isGameRunning ? <Game API={this.API} eventSource={this.gameStream}/> : null }
         </div>
     )};
 }

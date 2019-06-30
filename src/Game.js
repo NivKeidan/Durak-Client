@@ -40,6 +40,7 @@ class Game extends React.Component {
     componentDidMount() {
         this.props.eventSource.addEventListener('gameupdated', this.handleEventGameUpdated);
         this.props.eventSource.addEventListener('gamestarted', this.handleEventGameStarted);
+        this.props.eventSource.addEventListener('gamerestarted', this.handleEventGameUpdated);
     }
 
     // SSE
@@ -211,12 +212,10 @@ class Game extends React.Component {
     // Internal methods
 
     getPlayerPositions(o) {
-        let playerNames = Object.keys(o.playerCards);
-        console.log(playerNames);
         const positions = ["top", "left", "bottom", "right"];
         let playerPositions = {};
-        for (let i = 0; i < playerNames.length; i++)
-            playerPositions[playerNames[i]] = positions[i];
+        for (let i = 0; i < o.players.length; i++)
+            playerPositions[o.players[i]] = positions[i];
         return playerPositions;
     }
 }

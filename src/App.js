@@ -3,6 +3,7 @@ import './styles/App.css';
 import Game from "./Game";
 import Menu from "./Menu";
 import API from "./API/API";
+import { host, sseEndpoint } from "./API/API";
 
 class App extends React.Component {
     constructor(props) {
@@ -11,40 +12,36 @@ class App extends React.Component {
         // Function binding
         this.createNewGame = this.createNewGame.bind(this);
         this.joinGame = this.joinGame.bind(this);
-        this.getGameStatus = this.getGameStatus.bind(this);
         this.leaveGame = this.leaveGame.bind(this);
+        this.handleIncomingSSE = this.handleIncomingSSE.bind(this);
 
         this.state = {
             // Add options here, or go down to menu
             isGameRunning: false,
             isGameCreated: false,
-            isUserJoined: false
+            isUserJoined: false,
         };
-        this.API = new API();
+
     }
+
+    // Lifecycle
 
     componentDidMount() {
-        this.getGameStatus();
+        this.API = new API();
+        this.eventSource = new EventSource(host + sseEndpoint);
+        this.eventSource.addEventListener('gamecreated', this.handleIncomingSSE);
     }
 
-
-    getGameStatus() {
-        this.API.getCurrentGameStatus().then(
-            (result) => {
-                this.setState({...result})
-            },
-            function failed(err) {
-                console.log(err.message)
-            }
-        );
+    // SSE
+    handleIncomingSSE(e) {
+        this.setState(JSON.parse(e.data));
     }
+
+    // API Actions
 
     createNewGame(numOfPlayers) {
         this.API.createGame({numOfPlayers: numOfPlayers}).then(
-            () => {
-                this.setState({
-                    isGameCreated: true});
-            },
+            () => {},
             function failed(err) {
                 console.log(err.message);
             });
@@ -54,7 +51,6 @@ class App extends React.Component {
         this.API.joinGame({playerName}).then(
             () => {
                 this.setState({isUserJoined: true})
-                // TODO Register event source here
             },
             function failed(err) {
                 console.log(err.message);
@@ -70,12 +66,13 @@ class App extends React.Component {
                     isUserJoined: false
                 });
                 // TODO Unregister event source here
-                this.getGameStatus();
             },
             function failed(err) {
                 console.log(err.message);
             });
     }
+
+    // Renderings
 
     render() {
       return (
@@ -86,7 +83,7 @@ class App extends React.Component {
                   createNewGame={this.createNewGame}
                   joinGame={this.joinGame}
                   leaveGame={this.leaveGame}/>
-            {this.state.isGameRunning ? <Game API={this.API} numOfPlayers={this.state.numOfPlayers}/> : null }
+            {this.state.isGameRunning ? <Game API={this.API} eventSource={this.eventSource}/> : null }
         </div>
     )};
 }

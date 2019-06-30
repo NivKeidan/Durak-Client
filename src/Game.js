@@ -10,6 +10,9 @@ class Game extends React.Component {
         this.handleTableClick = this.handleTableClick.bind(this);
         this.handleTableCardClick = this.handleTableCardClick.bind(this);
         this.handleMoveCardsToBita = this.handleMoveCardsToBita.bind(this);
+        this.handleEventGameUpdated = this.handleEventGameUpdated.bind(this);
+        this.getPlayerPositions = this.getPlayerPositions.bind(this);
+        this.handleEventGameStarted = this.handleEventGameStarted.bind(this);
 
         this.state = {
             cardSelected: {playerName: null, cardCode: null},
@@ -30,22 +33,26 @@ class Game extends React.Component {
         
     };
 
-    // componentDidMount() {
-    //     this.startGameAPI();
-    // }
-    //
-    // // API Calls
-    //
-    // startGameAPI() {
-    //     this.props.API.createGame({numOfPlayers: this.state.numOfPlayers}).then(
-    //         (result) => {
-    //             let playerPositions = this.getPlayerPositions(result);
-    //             this.setState({...result, playerPositions});
-    //         },
-    //         function failed(err) {
-    //             console.log(err.message);
-    //         });
-    // }
+    // Lifecycle
+
+    componentDidMount() {
+        this.props.eventSource.addEventListener('gameupdated', this.handleEventGameUpdated);
+        this.props.eventSource.addEventListener('gamestarted', this.handleEventGameStarted);
+    }
+
+    // SSE
+
+    handleEventGameUpdated(e) {
+        this.setState(JSON.parse(e.data));
+    }
+
+    handleEventGameStarted(e) {
+        let stateObj = JSON.parse(e.data);
+        stateObj["playerPositions"] = this.getPlayerPositions(stateObj);
+        this.setState(stateObj);
+    }
+
+    // API Actions
 
     takeCards(playerName) {
 
@@ -58,9 +65,7 @@ class Game extends React.Component {
             return;
 
         this.props.API.takeAllCards(playerName).then(
-            (partialState) => {
-                this.setState({...partialState})
-            },
+            () => {},
             function failed(err) {
                 console.log(err.message);
             });
@@ -70,26 +75,18 @@ class Game extends React.Component {
         this.props.API.attack({
             attackingPlayerName: playerName,
             attackingCardCode: cardCode
-        }).then(
-            ({playerCards, cardsOnTable}) => {
+        }).then(()=>{},
+            function failed(err) {
+                console.log(err.message);
+            })
+    }
 
-                this.setState((prevState) => {
-
-                    // Un-select card if needed
-                    let cardSelected = Object.assign({}, prevState.cardSelected);
-                    if (prevState.cardSelected.cardCode === cardCode) {
-                        Object.keys(cardSelected).map(
-                            (item, key) => cardSelected[item] = null);
-                    }
-
-                    return ({
-                        cardSelected,
-                        cardsOnTable,
-                        playerCards,
-                    });
-                });
-            },
-
+    defend(defendingPlayerName, defendingCardCode, attackingCardCode) {
+        this.props.API.defend({
+            defendingPlayerName,
+            defendingCardCode,
+            attackingCardCode}
+        ).then(()=>{},
             function failed(err) {
                 console.log(err.message);
             })
@@ -97,9 +94,7 @@ class Game extends React.Component {
 
     handleMoveCardsToBita() {
         this.props.API.moveCardsToBita().then(
-            (partialState) => {
-                this.setState({...partialState});
-            },
+            () => {},
             function failed(err) {
                 console.log(err.message);
             });
@@ -149,31 +144,7 @@ class Game extends React.Component {
             // Validate its player's turn
             // Validate this card can defend
 
-            this.props.API.defend({
-                defendingPlayerName: selectedCardPlayerName,
-                defendingCardCode: selectedCardCode, attackingCardCode: tableCardCode
-            }).then(
-                ({playerCards, cardsOnTable}) => {
-
-                    this.setState((prevState) => {
-
-                        // Un-select card if needed
-                        let cardSelected = Object.assign({}, prevState.cardSelected);
-                        if (prevState.cardSelected.cardCode === selectedCardCode) {
-                            Object.keys(cardSelected).map(
-                                (item, key) => cardSelected[item] = null);
-                        }
-
-                        return ({
-                            cardSelected,
-                            cardsOnTable,
-                            playerCards,
-                        });
-                    });
-                },
-                function failed(errorMsg) {
-                    console.log(errorMsg);
-                });
+            this.defend(selectedCardPlayerName, selectedCardCode, tableCardCode);
         }
     }
 
@@ -220,11 +191,14 @@ class Game extends React.Component {
         );
     };
 
-    getPlayerPositions(result) {
-        let playerNames = Object.keys(result.playerCards);
+    // Internal methods
+
+    getPlayerPositions(o) {
+        let playerNames = Object.keys(o.playerCards);
+        console.log(playerNames);
         const positions = ["top", "left", "bottom", "right"];
         let playerPositions = {};
-        for (let i = 0; i < this.state.numOfPlayers; i++)
+        for (let i = 0; i < playerNames.length; i++)
             playerPositions[playerNames[i]] = positions[i];
         return playerPositions;
     }

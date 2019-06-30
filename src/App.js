@@ -60,12 +60,7 @@ class App extends React.Component {
     leaveGame(playerName) {
         this.API.leaveGame({playerName}).then(
             () => {
-                this.setState({
-                    isGameRunning: false,
-                    isGameCreated: false,
-                    isUserJoined: false
-                });
-                // TODO Unregister event source here
+                this.setState({isUserJoined: false})
             },
             function failed(err) {
                 console.log(err.message);

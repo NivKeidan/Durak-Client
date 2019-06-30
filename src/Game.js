@@ -78,7 +78,9 @@ class Game extends React.Component {
         this.props.API.attack({
             attackingPlayerName: playerName,
             attackingCardCode: cardCode
-        }).then(()=>{},
+        }).then(()=>{
+                this.clearCardSelected()
+            },
             function failed(err) {
                 console.log(err.message);
             })
@@ -89,7 +91,9 @@ class Game extends React.Component {
             defendingPlayerName,
             defendingCardCode,
             attackingCardCode}
-        ).then(()=>{},
+        ).then(()=>{
+                this.clearCardSelected()
+            },
             function failed(err) {
                 console.log(err.message);
             })
@@ -217,6 +221,10 @@ class Game extends React.Component {
         for (let i = 0; i < o.players.length; i++)
             playerPositions[o.players[i]] = positions[i];
         return playerPositions;
+    }
+
+    clearCardSelected() {
+        this.setState({cardSelected: {playerName: null, cardCode: null}})
     }
 }
 

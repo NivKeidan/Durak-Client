@@ -28,7 +28,9 @@ class Game extends React.Component {
             },
             cardsOnTable: [],
             kozerCard: null,
-            numOfCardsLeftInDeck: null
+            numOfCardsLeftInDeck: null,
+            gameOver: false,
+            isDraw: false
         };
         
     };
@@ -177,16 +179,31 @@ class Game extends React.Component {
 
     renderRestartGameButton() {
         return (
-            <button className={"btn-restart-game"} onClick={() => this.startGameAPI()}> Restart </button>
+            <button className={"btn-restart-game"} onClick={() => this.props.API.restartGame()}> Restart </button>
         )
     }
+
+    renderGameOver() {
+        return (
+            <div className="gameOver">
+                Game is over. Click here to restart
+                {this.renderRestartGameButton()}
+            </div>
+    )}
+
+    renderGame() {
+        return (
+            <div className="gameRunning">
+                {this.renderRestartGameButton()}
+                {this.renderHands()}
+                {this.renderTable()}
+            </div>
+    )}
 
     render() {
         return (
             <div className="game">
-                {this.renderRestartGameButton()}
-                {this.renderHands()}
-                {this.renderTable()}
+                {this.state.gameOver ? this.renderGameOver() : this.renderGame() }
             </div>
         );
     };

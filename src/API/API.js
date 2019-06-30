@@ -7,6 +7,7 @@ const defend = "/defend";
 const moveCardsToBita = "/moveCardsToBita";
 const takeCards = "/takeCards";
 const leaveGame = "/leaveGame";
+const restartGame = "/restartGame";
 
 export class API {
     createGame(optionsObject) {
@@ -124,6 +125,22 @@ export class API {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(takeCardsObject)
+            }).then( (res) =>
+                handleResponse(resolve, reject, res)
+            ).catch( (err) =>
+                handleError(reject, err))
+        });
+    }
+
+    restartGame() {
+        return new Promise( (resolve, reject) => {
+            fetch(host + restartGame, {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             }).then( (res) =>
                 handleResponse(resolve, reject, res)
             ).catch( (err) =>

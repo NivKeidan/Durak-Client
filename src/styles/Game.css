@@ -1,4 +1,4 @@
-.game {
+.gameRunning {
     left: 15%;
     margin-left: 10px;
     grid-template-rows: [verstart] 25% [ver1] 50% [ver2] 25% [verend];

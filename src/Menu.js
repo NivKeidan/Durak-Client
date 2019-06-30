@@ -25,7 +25,7 @@ class Menu extends React.Component {
     }
 
     handleCreateGameSubmit(e) {
-        this.props.createNewGame(this.state.numOfPlayers);
+        this.props.createNewGame(this.state.numOfPlayers, this.state.playerName);
         e.preventDefault();
     }
 
@@ -49,8 +49,12 @@ class Menu extends React.Component {
 
     renderCreateGameMenu() {
         return (
-            <div className={"menu-options"}>
+            <div className={"menu-create"}>
                 <form onSubmit={this.handleCreateGameSubmit}>
+                    <label>Player Name:
+                        <input type="text" value={this.state.playerName}
+                               onChange={this.handlePlayerNameChange} />
+                    </label>
                     <label> Number of players:
                         <select value={this.state.numOfPlayers} onChange={this.handlePlayerNumChange}>
                             <option value="2">2</option>

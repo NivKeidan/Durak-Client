@@ -44,9 +44,11 @@ class App extends React.Component {
 
     // API Actions
 
-    createNewGame(numOfPlayers) {
-        this.API.createGame({numOfPlayers: numOfPlayers}).then(
-            () => {},
+    createNewGame(numOfPlayers, playerName) {
+        this.API.createGame({numOfPlayers: numOfPlayers, playerName}).then(
+            () => {
+                this.setState({isUserJoined: true})
+            },
             function failed(err) {
                 console.log(err.message);
             });

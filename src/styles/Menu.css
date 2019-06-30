@@ -4,6 +4,15 @@
     border: 1px solid black;
 }
 
+.menu-create label {
+    display: block;
+    margin-bottom: 10%;
+}
+
+.menu-create label select {
+    margin-left: 10px;
+}
+
 .menu-btn {
     margin-top: 25%;
     margin-bottom: 10px;

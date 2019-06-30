@@ -46,10 +46,20 @@ class Game extends React.Component {
     // SSE
 
     handleEventGameUpdated(e) {
+        // TODO Get origin from config
+        if (e.origin !== "http://localhost:8080") {
+            console.log('SECURITY ORIGIN UNCLEAR');
+            return;
+        }
         this.setState(JSON.parse(e.data));
     }
 
     handleEventGameStarted(e) {
+        // TODO Get origin from config
+        if (e.origin !== "http://localhost:8080") {
+            console.log('SECURITY ORIGIN UNCLEAR');
+            return;
+        }
         let stateObj = JSON.parse(e.data);
         stateObj["playerPositions"] = this.getPlayerPositions(stateObj);
         this.setState(stateObj);

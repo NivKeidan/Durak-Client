@@ -46,8 +46,7 @@ class Game extends React.Component {
     // SSE
 
     handleEventGameUpdated(e) {
-        // TODO Get origin from config
-        if (e.origin !== "http://localhost:8080") {
+        if (e.origin !== host) {
             console.log('SECURITY ORIGIN UNCLEAR');
             return;
         }
@@ -55,8 +54,7 @@ class Game extends React.Component {
     }
 
     handleEventGameStarted(e) {
-        // TODO Get origin from config
-        if (e.origin !== "http://localhost:8080") {
+        if (e.origin !== host) {
             console.log('SECURITY ORIGIN UNCLEAR');
             return;
         }

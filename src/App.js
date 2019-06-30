@@ -34,8 +34,7 @@ class App extends React.Component {
 
     // SSE
     handleIncomingSSE(e) {
-        // TODO Get origin from config
-        if (e.origin !== "http://localhost:8080") {
+        if (e.origin !== host) {
             console.log('SECURITY ORIGIN UNCLEAR');
             return;
         }

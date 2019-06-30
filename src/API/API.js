@@ -1,3 +1,4 @@
+// TODO Move this to proper config file
 export const host = "http://localhost:8080";
 export const sseEndpoint = "/eventSource";
 const createGame = "/createGame";

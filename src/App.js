@@ -90,7 +90,7 @@ class App extends React.Component {
                   createNewGame={this.createNewGame}
                   joinGame={this.joinGame}
                   leaveGame={this.leaveGame}/>
-            {this.state.isGameRunning ? <Game API={this.API} eventSource={this.gameStream}/> : null }
+            {this.state.isGameRunning ? <Game API={this.API} streamer={this.gameStream}/> : null }
         </div>
     )};
 }

@@ -14,6 +14,7 @@ class Game extends React.Component {
         this.handleEventGameUpdated = this.handleEventGameUpdated.bind(this);
         this.getPlayerPositions = this.getPlayerPositions.bind(this);
         this.handleEventGameStarted = this.handleEventGameStarted.bind(this);
+        this.handleStreamConnected = this.handleStreamConnected.bind(this);
 
         this.state = {
             cardSelected: {playerName: null, cardCode: null},
@@ -39,12 +40,21 @@ class Game extends React.Component {
     // Lifecycle
 
     componentDidMount() {
-        this.props.appStream.addEventListener('gameupdated', this.handleEventGameUpdated);
-        this.props.appStream.addEventListener('gamestarted', this.handleEventGameStarted);
-        this.props.appStream.addEventListener('gamerestarted', this.handleEventGameUpdated);
+        this.props.streamer.addEventListener('streamconnected', this.handleStreamConnected);
+        this.props.streamer.addEventListener('gameupdated', this.handleEventGameUpdated);
+        this.props.streamer.addEventListener('gamestarted', this.handleEventGameStarted);
+        this.props.streamer.addEventListener('gamerestarted', this.handleEventGameUpdated);
     }
 
     // SSE
+
+    handleStreamConnected(e) {
+        if (e.origin !== host) {
+            console.log('SECURITY ORIGIN UNCLEAR');
+            return;
+        }
+        console.log("Game Stream Connected");
+    }
 
     handleEventGameUpdated(e) {
         if (e.origin !== host) {

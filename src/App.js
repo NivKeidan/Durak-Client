@@ -42,7 +42,7 @@ class App extends React.Component {
     }
 
     connectToGameStream(res) {
-        this.gameStream = new EventSource(host + gameStream + '?id=' + res.idCode)
+        this.gameStream = new EventSource(host + gameStream + '?id=' + res.idCode + '&name=' + this.state.playerName)
     }
 
     // API Actions
@@ -50,7 +50,7 @@ class App extends React.Component {
     createNewGame(numOfPlayers, playerName) {
         this.API.createGame({numOfPlayers: numOfPlayers, playerName}).then(
             (res) => {
-                this.setState({isUserJoined: true});
+                this.setState({isUserJoined: true, playerName});
                 this.connectToGameStream(res);
             },
             function failed(err) {

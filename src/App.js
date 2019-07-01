@@ -61,7 +61,7 @@ class App extends React.Component {
     joinGame(playerName) {
         this.API.joinGame({playerName}).then(
             (res) => {
-                this.setState({isUserJoined: true});
+                this.setState({isUserJoined: true, playerName});
                 this.connectToGameStream(res);
             },
             function failed(err) {

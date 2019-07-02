@@ -2,7 +2,9 @@ import React from "react";
 import Hand from "./Hand";
 import "./styles/Game.css";
 import Table from "./Table";
-import { host } from "./API/API";
+import {gameStream, host} from "./API/API";
+
+
 
 class Game extends React.Component {
     constructor(props) {
@@ -14,7 +16,7 @@ class Game extends React.Component {
         this.handleEventGameUpdated = this.handleEventGameUpdated.bind(this);
         this.getPlayerPositions = this.getPlayerPositions.bind(this);
         this.handleEventGameStarted = this.handleEventGameStarted.bind(this);
-        this.handleStreamConnected = this.handleStreamConnected.bind(this);
+        this.connectToGameStream = this.connectToGameStream.bind(this);
 
         this.state = {
             cardSelected: {playerName: null, cardCode: null},
@@ -40,20 +42,18 @@ class Game extends React.Component {
     // Lifecycle
 
     componentDidMount() {
-        this.props.streamer.addEventListener('streamconnected', this.handleStreamConnected);
-        this.props.streamer.addEventListener('gameupdated', this.handleEventGameUpdated);
-        this.props.streamer.addEventListener('gamestarted', this.handleEventGameStarted);
-        this.props.streamer.addEventListener('gamerestarted', this.handleEventGameUpdated);
+        this.connectToGameStream();
+
     }
 
     // SSE
 
-    handleStreamConnected(e) {
-        if (e.origin !== host) {
-            console.log('SECURITY ORIGIN UNCLEAR');
-            return;
-        }
-        console.log("Game Stream Connected");
+    connectToGameStream() {
+        this.gameStream = new EventSource(host + gameStream +
+            '?id=' + this.props.connectionId + '&name=' + this.props.playerName);
+        this.gameStream.addEventListener('gameupdated', this.handleEventGameUpdated);
+        this.gameStream.addEventListener('gamestarted', this.handleEventGameStarted);
+        this.gameStream.addEventListener('gamerestarted', this.handleEventGameUpdated);
     }
 
     handleEventGameUpdated(e) {
@@ -73,6 +73,8 @@ class Game extends React.Component {
         stateObj["playerPositions"] = this.getPlayerPositions(stateObj);
         this.setState(stateObj);
     }
+
+
 
     // API Actions
 

@@ -3,7 +3,7 @@ import './styles/App.css';
 import Game from "./Game";
 import Menu from "./Menu";
 import API from "./API/API";
-import { host, appStream, gameStream } from "./API/API";
+import { host, appStream } from "./API/API";
 
 class App extends React.Component {
     constructor(props) {
@@ -13,15 +13,22 @@ class App extends React.Component {
         this.createNewGame = this.createNewGame.bind(this);
         this.joinGame = this.joinGame.bind(this);
         this.leaveGame = this.leaveGame.bind(this);
-        this.handleIncomingSSE = this.handleIncomingSSE.bind(this);
+        this.handleEventGameStatus = this.handleEventGameStatus.bind(this);
+        this.renderGame = this.renderGame.bind(this);
+        this.handleEventGameStarted = this.handleEventGameStarted.bind(this);
+        this.closeAppStream = this.closeAppStream.bind(this);
+        this.handleAppStream = this.handleAppStream.bind(this);
+        this.updateReady = this.updateReady.bind(this);
 
         this.state = {
             // Add options here, or go down to menu
             isGameRunning: false,
             isGameCreated: false,
             isUserJoined: false,
+            connectionId: null,
+            playerName: null,
+            isWatcher: false
         };
-
     }
 
     // Lifecycle
@@ -29,20 +36,45 @@ class App extends React.Component {
     componentDidMount() {
         this.API = new API();
         this.appStream = new EventSource(host + appStream);
-        this.appStream.addEventListener('gamecreated', this.handleIncomingSSE);
+        this.appStream.addEventListener('gamestatus', this.handleEventGameStatus);
     }
 
     // SSE
-    handleIncomingSSE(e) {
+    handleEventGameStatus(e) {
         if (e.origin !== host) {
             console.log('SECURITY ORIGIN UNCLEAR');
             return;
         }
-        this.setState(JSON.parse(e.data));
+        this.setState(JSON.parse(e.data), () => this.updateReady());
     }
 
-    connectToGameStream(res) {
-        this.gameStream = new EventSource(host + gameStream + '?id=' + res.idCode + '&name=' + this.state.playerName)
+    handleEventGameStarted(e) {
+        // TODO This should be removed, this is only here as a reminder to implement watcher/admin here
+        if (e.origin !== host) {
+            console.log('SECURITY ORIGIN UNCLEAR');
+            return;
+        }
+        if (this.state.isWatcher)
+            this.setState(JSON.parse(e.data))
+
+    }
+
+    closeAppStream() {
+        this.appStream.close()
+    }
+
+    handleAppStream() {
+        // TODO Add logic here for admin? or for game watchers?
+        if (this.state.isWatcher)
+            this.appStream.addEventListener('gamestarted', this.handleEventGameStarted);
+        else
+            this.closeAppStream();
+    }
+
+    updateReady() {
+        if (this.state.connectionId && this.state.isGameRunning && this.state.playerName) {
+            this.setState({isReady: true})
+        }
     }
 
     // API Actions
@@ -50,8 +82,10 @@ class App extends React.Component {
     createNewGame(numOfPlayers, playerName) {
         this.API.createGame({numOfPlayers: numOfPlayers, playerName}).then(
             (res) => {
-                this.setState({isUserJoined: true, playerName});
-                this.connectToGameStream(res);
+                this.setState({
+                    isUserJoined: true,
+                    connectionId: res.idCode,
+                    playerName: res.playerName}, () => this.updateReady());
             },
             function failed(err) {
                 console.log(err.message);
@@ -61,8 +95,10 @@ class App extends React.Component {
     joinGame(playerName) {
         this.API.joinGame({playerName}).then(
             (res) => {
-                this.setState({isUserJoined: true, playerName});
-                this.connectToGameStream(res);
+                this.setState({
+                    isUserJoined: true,
+                    connectionId: res.idCode,
+                    playerName: res.playerName}, () => this.updateReady());
             },
             function failed(err) {
                 console.log(err.message);
@@ -72,6 +108,7 @@ class App extends React.Component {
     leaveGame(playerName) {
         this.API.leaveGame({playerName}).then(
             () => {
+                this.closeGameStream();
                 this.setState({isUserJoined: false})
             },
             function failed(err) {
@@ -80,6 +117,13 @@ class App extends React.Component {
     }
 
     // Renderings
+
+    renderGame() {
+        this.handleAppStream();
+        return (
+            <Game API={this.API} connectionId={this.state.connectionId} playerName={this.state.playerName}/>
+        )
+    }
 
     render() {
       return (
@@ -90,7 +134,7 @@ class App extends React.Component {
                   createNewGame={this.createNewGame}
                   joinGame={this.joinGame}
                   leaveGame={this.leaveGame}/>
-            {this.state.isGameRunning ? <Game API={this.API} streamer={this.gameStream}/> : null }
+            {this.state.isReady ? this.renderGame() : null }
         </div>
     )};
 }

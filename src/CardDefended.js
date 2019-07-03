@@ -6,12 +6,14 @@ function CardDefended(props) {
         <div className={"card-defended"}>
                 <img className={"card-defended-below"}
                      src={"./pics/cards/" + props.attackingCardCode + ".png"}
-                     alt={"./pics/cards/back.png"}
+                     alt="card should be shown here..."
+                     onError={(e)=>{e.target.onerror = null; e.target.src="./pics/cards/back.png"}}
                      height={100}
                 />
                 <img className={"card-defended-top"}
                      src={"./pics/cards/" + props.defendingCardCode + ".png"}
-                     alt={"./pics/cards/back.png"}
+                     alt="card should be shown here..."
+                     onError={(e)=>{e.target.onerror = null; e.target.src="./pics/cards/back.png"}}
                      height={100}
                      />
         </div>

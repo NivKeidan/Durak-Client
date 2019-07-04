@@ -220,7 +220,8 @@ class Game extends React.Component {
                                      cardSelected={this.state.cardSelected}
                                      cardOnClick={this.handleCardClicked}
                                      takeCards={() => this.takeCards(item)}
-                                     isMyTurn={item === this.state.playerDefending}
+                                     isDefending={item === this.state.playerDefending}
+                                     canPerformActions={this.props.playerName === item}
                                      moveCardsToBita={this.handleMoveCardsToBita}/>))
     };
 
@@ -275,7 +276,7 @@ class Game extends React.Component {
     }
 
     clearCardSelected() {
-        this.setState({cardSelected: {playerName: null, cardCode: null}})
+        this.setState({cardSelected: null})
     }
 
     // Game Vadlidators

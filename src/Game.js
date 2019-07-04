@@ -15,6 +15,7 @@ class Game extends React.Component {
         this.getPlayerPositions = this.getPlayerPositions.bind(this);
         this.handleEventGameStarted = this.handleEventGameStarted.bind(this);
         this.connectToGameStream = this.connectToGameStream.bind(this);
+        this.getCardValueByCode = this.getCardValueByCode.bind(this);
 
         this.state = {
             cardSelected: null,
@@ -75,6 +76,8 @@ class Game extends React.Component {
 
     takeCards(playerName) {
 
+        // Validations
+
         // Validate this is player's turn
         if (this.state.playerDefending !== playerName) {
             console.log("Not your turn");
@@ -97,6 +100,36 @@ class Game extends React.Component {
     }
 
     attack(cardCode) {
+
+        // Validations
+
+        if (cardCode) {
+
+            if (!this.canAttackNow()) {
+                console.log("Can not attack now");
+                return;
+            }
+
+            // TODO Add check card limit set in game options
+
+            if (this.numOfUndefendedCards() >= this.getNumOfCardsInHand()) {
+                // TODO Future option: can put card on table and defender can decide which to reply
+                console.log("Defender does not have enough cards");
+                return;
+            }
+
+            if (!this.isCardInHand(cardCode)) {
+                console.log("You do not have that card");
+                return;
+            }
+
+            if (!this.canAddCard(cardCode)) {
+                console.log("Cannot attack with this card");
+                return
+            }
+
+        }
+
         this.props.API.attack({
             attackingPlayerName: this.props.playerName,
             attackingCardCode: cardCode
@@ -109,6 +142,24 @@ class Game extends React.Component {
     }
 
     defend(defendingCardCode, attackingCardCode) {
+
+        // Validations
+
+        if (defendingCardCode) {
+
+            if (this.state.playerDefending !== this.props.playerName) {
+                console.log("You are not the defending player");
+                return
+            }
+
+            if(!this.isCardInHand(defendingCardCode)) {
+                console.log("Card not in hand");
+                return
+            }
+
+            // TODO Add validation card can actually defend
+        }
+
         this.props.API.defend({
             defendingPlayerName: this.props.playerName,
             defendingCardCode,
@@ -122,6 +173,8 @@ class Game extends React.Component {
     }
 
     handleMoveCardsToBita() {
+
+        // Validations
 
         if (this.isBoardEmpty()) {
             console.log("board is empty");
@@ -143,33 +196,7 @@ class Game extends React.Component {
     // Event handlers
 
     handleTableClick() {
-
-        const selectedCardCode = this.state.cardSelected;
-
-        // Attacking
-        if (selectedCardCode) {
-
-            if (!this.canAttackNow()) {
-                console.log("Can not attack now");
-                return;
-            }
-
-            // TODO Add check card limit set in game options
-
-            if (this.numOfUndefendedCards() >= this.getNumOfCardsInHand()) {
-                // TODO Future option: can put card on table and defender can decide which to reply
-                console.log("Defender does not have enough cards");
-                return;
-            }
-
-            if (!this.isCardInHand(selectedCardCode)) {
-                console.log("You do not have that card");
-                return;
-            }
-
-            this.attack(selectedCardCode)
-
-        }
+        this.attack(this.state.cardSelected)
     }
 
     handleCardClicked(cardCode) {
@@ -189,23 +216,7 @@ class Game extends React.Component {
         e.stopPropagation();  // Stops table click from happening
 
         const selectedCardCode = this.state.cardSelected;
-
-        if (selectedCardCode) {
-
-            if (this.state.playerDefending !== this.props.playerName) {
-                console.log("You are not the defending player");
-                return
-            }
-
-            if(!this.isCardInHand(selectedCardCode)) {
-                console.log("Card not in hand");
-                return
-            }
-
-            // TODO Add validation card can actually defend
-
-            this.defend(selectedCardCode, tableCardCode);
-        }
+        this.defend(selectedCardCode, tableCardCode);
     }
 
     // Renderings
@@ -279,7 +290,7 @@ class Game extends React.Component {
         this.setState({cardSelected: null})
     }
 
-    // Game Vadlidators
+    // Game Validators
 
     numOfUndefendedCards() {
         let counter = 0;
@@ -323,6 +334,50 @@ class Game extends React.Component {
 
     isTableEmpty() {
         return this.state.cardsOnTable.length === 0;
+    }
+
+    canAddCard(cardCode) {
+        if (this.isBoardEmpty())
+            return true;
+
+        const cardValue = this.getCardValueByCode(cardCode);
+        if (cardValue === 0)
+            return false;
+
+        for (const cardOnTableArray of this.state.cardsOnTable) {
+            for (const card of cardOnTableArray) {
+                if (this.getCardValueByCode(card) === cardValue)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    getCardValueByCode(cardCode) {
+        // Returns 0 if error occurred
+
+        const valueCode = cardCode.substring(0, cardCode.length-1);
+        let value = 0;
+
+        switch(valueCode) {
+            case "A":
+                value = 14;
+                break;
+            case "K":
+                value = 13;
+                break;
+            case "Q":
+                value = 12;
+                break;
+            case "J":
+                value = 11;
+                break;
+            default:
+                value = parseInt(valueCode);
+        }
+    if (value <= 0 || value > 14)
+        return 0;
+    return value
     }
 }
 

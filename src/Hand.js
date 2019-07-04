@@ -12,7 +12,7 @@ function Hand(props) {
               {props.cards.map(
                   (item, key) => <Card key={key} code={item}
                                        onCardClick={() => props.cardOnClick(item)}
-                                       selected={props.cardSelected === item}/>)}
+                                       selected={props.cardSelected === item && item !== null }/>)}
           </div>
           {props.isMyTurn ?
           <div className={"player-buttons"}>

@@ -40,6 +40,7 @@ class App extends React.Component {
     }
 
     // SSE
+
     handleEventGameStatus(e) {
         if (e.origin !== host) {
             console.log('SECURITY ORIGIN UNCLEAR');
@@ -80,6 +81,11 @@ class App extends React.Component {
     // API Actions
 
     createNewGame(numOfPlayers, playerName) {
+
+        // TODO Add character check for player name validation
+        // TODO Validate num of players is reasonable
+        // TODO This will in the future will hold all the options for the game
+
         this.API.createGame({numOfPlayers: numOfPlayers, playerName}).then(
             (res) => {
                 this.setState({
@@ -93,6 +99,8 @@ class App extends React.Component {
     }
 
     joinGame(playerName) {
+
+        // TODO Add player name valiation
         this.API.joinGame({playerName}).then(
             (res) => {
                 this.setState({
@@ -105,10 +113,12 @@ class App extends React.Component {
             });
     }
 
-    leaveGame(playerName) {
-        this.API.leaveGame({playerName}).then(
+    leaveGame() {
+
+        // TODO Add handling of game leaving in the middle?
+
+        this.API.leaveGame({playerName: this.state.playerName}).then(
             () => {
-                this.closeGameStream();
                 this.setState({isUserJoined: false})
             },
             function failed(err) {
@@ -133,7 +143,9 @@ class App extends React.Component {
                   isUserJoined={this.state.isUserJoined}
                   createNewGame={this.createNewGame}
                   joinGame={this.joinGame}
-                  leaveGame={this.leaveGame}/>
+                  leaveGame={this.leaveGame}
+                  playerName={this.state.playerName}
+            />
             {this.state.isReady ? this.renderGame() : null }
         </div>
     )};

@@ -4,8 +4,6 @@ import "./styles/Game.css";
 import Table from "./Table";
 import {gameStream, host} from "./API/API";
 
-
-
 class Game extends React.Component {
     constructor(props) {
         super(props);
@@ -19,9 +17,8 @@ class Game extends React.Component {
         this.connectToGameStream = this.connectToGameStream.bind(this);
 
         this.state = {
-            cardSelected: {playerName: null, cardCode: null},
+            cardSelected: null,
             playerPositions: {1: "top", 2: "left", 3: "bottom", 4: "right"},
-            numOfPlayers: props.numOfPlayers,
             playerStarting: null,
             playerDefending: null,
             playerCards: {
@@ -74,19 +71,23 @@ class Game extends React.Component {
         this.setState(stateObj);
     }
 
-
-
     // API Actions
 
     takeCards(playerName) {
 
         // Validate this is player's turn
-        if (this.state.playerDefending !== playerName)
+        if (this.state.playerDefending !== playerName) {
+            console.log("Not your turn");
             return;
+        }
 
         // Validate cards on table
-        if (this.state.cardsOnTable.length === 0)
+        if (this.state.cardsOnTable.length === 0) {
+            console.log("No cards on table");
             return;
+        }
+
+        // TODO Add "grace" time for receiving more cards... - make it compatible? like a competetion.... be quick kind of thing
 
         this.props.API.takeAllCards(playerName).then(
             () => {},
@@ -95,9 +96,9 @@ class Game extends React.Component {
             });
     }
 
-    attack(playerName, cardCode) {
+    attack(cardCode) {
         this.props.API.attack({
-            attackingPlayerName: playerName,
+            attackingPlayerName: this.props.playerName,
             attackingCardCode: cardCode
         }).then(()=>{
                 this.clearCardSelected()
@@ -107,9 +108,9 @@ class Game extends React.Component {
             })
     }
 
-    defend(defendingPlayerName, defendingCardCode, attackingCardCode) {
+    defend(defendingCardCode, attackingCardCode) {
         this.props.API.defend({
-            defendingPlayerName,
+            defendingPlayerName: this.props.playerName,
             defendingCardCode,
             attackingCardCode}
         ).then(()=>{
@@ -121,6 +122,17 @@ class Game extends React.Component {
     }
 
     handleMoveCardsToBita() {
+
+        if (this.isBoardEmpty()) {
+            console.log("board is empty");
+            return;
+        }
+
+        if (!this.areAllCardsDefended()) {
+            console.log("some cards are un defended");
+            return;
+        }
+
         this.props.API.moveCardsToBita().then(
             () => {},
             function failed(err) {
@@ -132,47 +144,67 @@ class Game extends React.Component {
 
     handleTableClick() {
 
-        const selectedCardPlayerName = this.state.cardSelected.playerName;
-        const selectedCardCode = this.state.cardSelected.cardCode;
+        const selectedCardCode = this.state.cardSelected;
 
+        // Attacking
         if (selectedCardCode) {
-            // VALIDATION: Check that the player can add
-            // VALIDATION: Check that the player has this card
-            // VALIDATION: Check that this card can be added now
 
-            this.attack(selectedCardPlayerName, selectedCardCode)
+            if (!this.canAttackNow()) {
+                console.log("Can not attack now");
+                return;
+            }
+
+            // TODO Add check card limit set in game options
+
+            if (this.numOfUndefendedCards() >= this.getNumOfCardsInHand()) {
+                // TODO Future option: can put card on table and defender can decide which to reply
+                console.log("Defender does not have enough cards");
+                return;
+            }
+
+            if (!this.isCardInHand(selectedCardCode)) {
+                console.log("You do not have that card");
+                return;
+            }
+
+            this.attack(selectedCardCode)
 
         }
     }
 
-    handleCardClicked(playerName, cardCode) {
-        this.setState((prevState) => {
+    handleCardClicked(cardCode) {
 
-            // Cancel if selected card is clicked again
-            if (playerName === prevState.cardSelected.playerName &&
-                cardCode === prevState.cardSelected.cardCode) {
-                playerName = null;
+        this.setState((prevState) => {
+            // Cancel selection if selected card is clicked again
+            if (cardCode === prevState.cardSelected) {
                 cardCode = null;
             }
-
-            // Update state
-            return {cardSelected: {playerName, cardCode}};
+            return {
+                cardSelected: cardCode
+            };
         });
     }
 
     handleTableCardClick(e, tableCardCode) {
         e.stopPropagation();  // Stops table click from happening
 
-        const selectedCardPlayerName = this.state.cardSelected.playerName;
-        const selectedCardCode = this.state.cardSelected.cardCode;
+        const selectedCardCode = this.state.cardSelected;
 
         if (selectedCardCode) {
 
-            // Validate a card is selected
-            // Validate its player's turn
-            // Validate this card can defend
+            if (this.state.playerDefending !== this.props.playerName) {
+                console.log("You are not the defending player");
+                return
+            }
 
-            this.defend(selectedCardPlayerName, selectedCardCode, tableCardCode);
+            if(!this.isCardInHand(selectedCardCode)) {
+                console.log("Card not in hand");
+                return
+            }
+
+            // TODO Add validation card can actually defend
+
+            this.defend(selectedCardCode, tableCardCode);
         }
     }
 
@@ -185,10 +217,7 @@ class Game extends React.Component {
                                      playerName={item}
                                      position={this.state.playerPositions[item]}
                                      cards={this.state.playerCards[item]}
-                                     cardSelected={this.state.cardSelected.playerName === item ?
-                                         this.state.cardSelected.cardCode
-                                         :
-                                         null}
+                                     cardSelected={this.state.cardSelected}
                                      cardOnClick={this.handleCardClicked}
                                      takeCards={() => this.takeCards(item)}
                                      isMyTurn={item === this.state.playerDefending}
@@ -204,6 +233,7 @@ class Game extends React.Component {
     }
 
     renderRestartGameButton() {
+        // TODO Add game restart handler
         return (
             <button className={"btn-restart-game"} onClick={() => this.props.API.restartGame()}> Restart </button>
         )
@@ -246,6 +276,52 @@ class Game extends React.Component {
 
     clearCardSelected() {
         this.setState({cardSelected: {playerName: null, cardCode: null}})
+    }
+
+    // Game Vadlidators
+
+    numOfUndefendedCards() {
+        let counter = 0;
+        for (let i in this.state.cardsOnTable) {
+            if (i[1] != null)
+                counter++
+        }
+        return counter;
+    }
+
+    getNumOfCardsInHand() {
+        return this.state.playerCards[this.state.playerDefending].length;
+    }
+
+    canAttackNow() {
+        if (this.isTableEmpty()) {
+            return this.state.playerStarting === this.props.playerName
+        } else {
+            return this.state.playerDefending !== this.props.playerName
+        }
+    }
+
+    isCardInHand(cardCode) {
+        for (let card in this.state.playerCards[this.props.playerName])
+            if (cardCode ===  card)
+                return false;
+        return true;
+    }
+
+    isBoardEmpty() {
+        return this.state.cardsOnTable.length === 0;
+    }
+
+    areAllCardsDefended() {
+        for (let cardOnTable in this.state.cardsOnTable) {
+            if (cardOnTable[1] === null)
+                return false
+        }
+        return true;
+    }
+
+    isTableEmpty() {
+        return this.state.cardsOnTable.length === 0;
     }
 }
 

@@ -135,6 +135,9 @@ export class API {
     }
 
     restartGame() {
+
+        // TODO Add game restart handler?
+
         return new Promise( (resolve, reject) => {
             fetch(host + restartGame, {
                 method: 'POST',

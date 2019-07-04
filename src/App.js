@@ -82,7 +82,12 @@ class App extends React.Component {
 
     createNewGame(numOfPlayers, playerName) {
 
-        // TODO Add character check for player name validation
+        if (!this.isNameValid(playerName)) {
+            // TODO Add user notification that name is not valid
+            console.log("Invalid name");
+            return;
+        }
+
         // TODO Validate num of players is reasonable
         // TODO This will in the future will hold all the options for the game
 
@@ -100,7 +105,12 @@ class App extends React.Component {
 
     joinGame(playerName) {
 
-        // TODO Add player name valiation
+        if (!this.isNameValid(playerName)) {
+            // TODO Add user notification that naem is not valid
+            console.log("Invalid name");
+            return;
+        }
+
         this.API.joinGame({playerName}).then(
             (res) => {
                 this.setState({
@@ -126,6 +136,12 @@ class App extends React.Component {
             });
     }
 
+    // Validations
+
+    isNameValid(playerName) {
+        return /^[a-zA-Z0-9]+$/.test(playerName);
+    }
+
     // Renderings
 
     renderGame() {
@@ -149,6 +165,7 @@ class App extends React.Component {
             {this.state.isReady ? this.renderGame() : null }
         </div>
     )};
+
 }
 
 export default App;

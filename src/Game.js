@@ -262,7 +262,7 @@ class Game extends React.Component {
     renderGame() {
         return (
             <div className="gameRunning">
-                {this.renderRestartGameButton()}
+                {/*{this.renderRestartGameButton()}*/}
                 {this.renderHands()}
                 {this.renderTable()}
             </div>

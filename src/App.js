@@ -50,12 +50,15 @@ class App extends React.Component {
     }
 
     handleEventGameStarted(e) {
-        // TODO This should be removed, this is only here as a reminder to implement watcher/admin here
+        // TODO Integrate admin/watcher here
+
         if (e.origin !== host) {
             console.log('SECURITY ORIGIN UNCLEAR');
             return;
         }
         if (this.state.isWatcher)
+            // TODO App Stream does not send game data anymore. Most likely, a new stream will be created for watchers
+            //  and here is where the registration should be
             this.setState(JSON.parse(e.data))
 
     }
@@ -83,13 +86,16 @@ class App extends React.Component {
     createNewGame(numOfPlayers, playerName) {
 
         if (!this.isNameValid(playerName)) {
-            // TODO Add user notification that name is not valid
             console.log("Invalid name");
             return;
         }
 
-        // TODO Validate num of players is reasonable
-        // TODO This will in the future will hold all the options for the game
+        if (numOfPlayers < 2 || numOfPlayers > 4) {
+            console.log("Invalid num of players");
+            return;
+        }
+
+        // TODO CreateGame API call should accept an options object in the future
 
         this.API.createGame({numOfPlayers: numOfPlayers, playerName}).then(
             (res) => {
@@ -106,7 +112,6 @@ class App extends React.Component {
     joinGame(playerName) {
 
         if (!this.isNameValid(playerName)) {
-            // TODO Add user notification that naem is not valid
             console.log("Invalid name");
             return;
         }
@@ -125,7 +130,10 @@ class App extends React.Component {
 
     leaveGame() {
 
-        // TODO Add handling of game leaving in the middle?
+        if (this.state.isGameRunning) {
+            console.log("Can not leave game now, game is running");
+            return;
+        }
 
         this.API.leaveGame({playerName: this.state.playerName}).then(
             () => {

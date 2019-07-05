@@ -156,8 +156,6 @@ class Game extends React.Component {
                 console.log("Card not in hand");
                 return
             }
-
-            // TODO Add validation card can actually defend
         }
 
         this.props.API.defend({

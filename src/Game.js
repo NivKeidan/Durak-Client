@@ -92,7 +92,7 @@ class Game extends React.Component {
 
         // TODO Add "grace" time for receiving more cards... - make it compatible? like a competetion.... be quick kind of thing
 
-        this.props.API.takeAllCards(playerName).then(
+        this.props.API.takeAllCards({playerName}).then(
             () => {},
             function failed(err) {
                 console.log(err.message);
@@ -170,7 +170,7 @@ class Game extends React.Component {
             })
     }
 
-    handleMoveCardsToBita() {
+    handleMoveCardsToBita(playerName) {
 
         // Validations
 
@@ -184,7 +184,7 @@ class Game extends React.Component {
             return;
         }
 
-        this.props.API.moveCardsToBita().then(
+        this.props.API.moveCardsToBita({playerName}).then(
             () => {},
             function failed(err) {
                 console.log(err.message);
@@ -231,7 +231,7 @@ class Game extends React.Component {
                                      takeCards={() => this.takeCards(item)}
                                      isDefending={item === this.state.playerDefending}
                                      canPerformActions={this.props.playerName === item}
-                                     moveCardsToBita={this.handleMoveCardsToBita}/>))
+                                     moveCardsToBita={this.handleMoveCardsToBita(item)}/>))
     };
 
     renderTable() {
@@ -243,7 +243,7 @@ class Game extends React.Component {
     }
 
     renderRestartGameButton() {
-        // TODO Add game restart handler
+        //  TODO Add game restart handler
         return (
             <button className={"btn-restart-game"} onClick={() => this.props.API.restartGame()}> Restart </button>
         )

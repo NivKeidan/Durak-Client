@@ -2,7 +2,6 @@ import React from "react";
 import Hand from "./Hand";
 import "./styles/Game.css";
 import Table from "./Table";
-import {gameStream, host} from "./API/API";
 
 class Game extends React.Component {
     constructor(props) {
@@ -47,7 +46,7 @@ class Game extends React.Component {
     // SSE
 
     connectToGameStream() {
-        this.gameStream = new EventSource(host + gameStream +
+        this.gameStream = new EventSource(process.env.REACT_APP_host + process.env.REACT_APP_gameStreamEndpoint +
             '?id=' + this.props.connectionId + '&name=' + this.props.playerName);
         this.gameStream.addEventListener('gameupdated', this.handleEventGameUpdated);
         this.gameStream.addEventListener('gamestarted', this.handleEventGameStarted);
@@ -55,7 +54,7 @@ class Game extends React.Component {
     }
 
     handleEventGameUpdated(e) {
-        if (e.origin !== host) {
+        if (e.origin !== process.env.REACT_APP_host) {
             console.log('SECURITY ORIGIN UNCLEAR');
             return;
         }
@@ -63,7 +62,7 @@ class Game extends React.Component {
     }
 
     handleEventGameStarted(e) {
-        if (e.origin !== host) {
+        if (e.origin !== process.env.REACT_APP_host) {
             console.log('SECURITY ORIGIN UNCLEAR');
             return;
         }
@@ -231,7 +230,7 @@ class Game extends React.Component {
                                      takeCards={() => this.takeCards(item)}
                                      isDefending={item === this.state.playerDefending}
                                      canPerformActions={this.props.playerName === item}
-                                     moveCardsToBita={this.handleMoveCardsToBita(item)}/>))
+                                     moveCardsToBita={() => this.handleMoveCardsToBita(item)}/>))
     };
 
     renderTable() {

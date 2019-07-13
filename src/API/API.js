@@ -1,20 +1,8 @@
-// TODO Move this to proper config file
-export const host = "http://localhost:8080";
-export const appStream = "/appStream";
-export const gameStream = "/gameStream";
-const createGame = "/createGame";
-const joinGame = "/joinGame";
-const attack = "/attack";
-const defend = "/defend";
-const moveCardsToBita = "/moveCardsToBita";
-const takeCards = "/takeCards";
-const leaveGame = "/leaveGame";
-const restartGame = "/restartGame";
-
 export class API {
     createGame(optionsObject) {
+        console.log()
         return new Promise ( (resolve, reject) => {
-                fetch(host + createGame, {
+                fetch(process.env.REACT_APP_host + process.env.REACT_APP_createGameEndpoint, {
                     method: 'POST',
                     mode: 'cors',
                     cache: 'no-cache',
@@ -32,7 +20,7 @@ export class API {
 
     joinGame(optionsObject) {
         return new Promise ( (resolve, reject) => {
-            fetch(host + joinGame, {
+            fetch(process.env.REACT_APP_host + process.env.REACT_APP_joinGameEndpoint, {
                 method: 'POST',
                 mode: 'cors',
                 cache: 'no-cache',
@@ -50,7 +38,7 @@ export class API {
 
     leaveGame(optionsObject) {
         return new Promise ( (resolve, reject) => {
-            fetch(host + leaveGame, {
+            fetch(process.env.REACT_APP_host + process.env.REACT_APP_leaveGameEndpoint, {
                 method: 'POST',
                 mode: 'cors',
                 cache: 'no-cache',
@@ -68,7 +56,7 @@ export class API {
 
     attack(attackObject) {
         return new Promise( (resolve, reject) => {
-            fetch(host + attack, {
+            fetch(process.env.REACT_APP_host + process.env.REACT_APP_attackEndpoint, {
                 method: 'POST',
                 mode: 'cors',
                 cache: 'no-cache',
@@ -85,7 +73,7 @@ export class API {
 
     defend(defendObject) {
         return new Promise((resolve, reject) => {
-            fetch(host + defend, {
+            fetch(process.env.REACT_APP_host + process.env.REACT_APP_defendEndpoint, {
                 method: 'POST',
                 mode: 'cors',
                 cache: 'no-cache',
@@ -102,7 +90,7 @@ export class API {
 
     moveCardsToBita(moveCardsToBitaObject) {
         return new Promise( (resolve, reject) => {
-            fetch(host + moveCardsToBita, {
+            fetch(process.env.REACT_APP_host + process.env.REACT_APP_moveCardsToBitaEndpoint, {
                 method: 'POST',
                 mode: 'cors',
                 cache: 'no-cache',
@@ -119,7 +107,7 @@ export class API {
 
     takeAllCards(takeCardsObject) {
         return new Promise( (resolve, reject) => {
-            fetch(host + takeCards, {
+            fetch(process.env.REACT_APP_host + process.env.REACT_APP_takeCardsEndpoint, {
                 method: 'POST',
                 mode: 'cors',
                 cache: 'no-cache',
@@ -137,7 +125,7 @@ export class API {
     restartGame() {
 
         return new Promise( (resolve, reject) => {
-            fetch(host + restartGame, {
+            fetch(process.env.REACT_APP_host + process.env.REACT_APP_restartGameEndpoint, {
                 method: 'POST',
                 mode: 'cors',
                 cache: 'no-cache',

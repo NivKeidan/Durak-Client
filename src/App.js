@@ -3,7 +3,6 @@ import './styles/App.css';
 import Game from "./Game";
 import Menu from "./Menu";
 import API from "./API/API";
-import { host, appStream } from "./API/API";
 
 class App extends React.Component {
     constructor(props) {
@@ -35,14 +34,14 @@ class App extends React.Component {
 
     componentDidMount() {
         this.API = new API();
-        this.appStream = new EventSource(host + appStream);
+        this.appStream = new EventSource(process.env.REACT_APP_host + process.env.REACT_APP_appStreamEndpoint);
         this.appStream.addEventListener('gamestatus', this.handleEventGameStatus);
     }
 
     // SSE
 
     handleEventGameStatus(e) {
-        if (e.origin !== host) {
+        if (e.origin !== process.env.REACT_APP_host) {
             console.log('SECURITY ORIGIN UNCLEAR');
             return;
         }
@@ -52,7 +51,7 @@ class App extends React.Component {
     handleEventGameStarted(e) {
         // TODO Integrate admin/watcher here
 
-        if (e.origin !== host) {
+        if (e.origin !== process.env.REACT_APP_host) {
             console.log('SECURITY ORIGIN UNCLEAR');
             return;
         }

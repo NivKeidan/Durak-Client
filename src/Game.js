@@ -73,12 +73,12 @@ class Game extends React.Component {
 
     // API Actions
 
-    takeCards(playerName) {
+    takeCards() {
 
         // Validations
 
         // Validate this is player's turn
-        if (this.state.playerDefending !== playerName) {
+        if (this.state.playerDefending !== this.props.playerName) {
             console.log("Not your turn");
             return;
         }
@@ -91,7 +91,7 @@ class Game extends React.Component {
 
         // TODO Add "grace" time for receiving more cards... - make it compatible? like a competetion.... be quick kind of thing
 
-        this.props.API.takeAllCards({playerName}).then(
+        this.props.API.takeAllCards(this.props.connectionId).then(
             () => {},
             function failed(err) {
                 console.log(err.message);
@@ -129,8 +129,7 @@ class Game extends React.Component {
 
         }
 
-        this.props.API.attack({
-            attackingPlayerName: this.props.playerName,
+        this.props.API.attack(this.props.connectionId, {
             attackingCardCode: cardCode
         }).then(()=>{
                 this.clearCardSelected()
@@ -157,8 +156,7 @@ class Game extends React.Component {
             }
         }
 
-        this.props.API.defend({
-            defendingPlayerName: this.props.playerName,
+        this.props.API.defend(this.props.connectionId, {
             defendingCardCode,
             attackingCardCode}
         ).then(()=>{
@@ -169,7 +167,7 @@ class Game extends React.Component {
             })
     }
 
-    handleMoveCardsToBita(playerName) {
+    handleMoveCardsToBita() {
 
         // Validations
 
@@ -183,7 +181,7 @@ class Game extends React.Component {
             return;
         }
 
-        this.props.API.moveCardsToBita({playerName}).then(
+        this.props.API.moveCardsToBita(this.props.connectionId).then(
             () => {},
             function failed(err) {
                 console.log(err.message);
@@ -244,7 +242,9 @@ class Game extends React.Component {
     renderRestartGameButton() {
         //  TODO Add game restart handler
         return (
-            <button className={"btn-restart-game"} onClick={() => this.props.API.restartGame()}> Restart </button>
+            <button className={"btn-restart-game"} onClick={() => this.props.API.restartGame(this.props.connectionId)}>
+                Restart
+            </button>
         )
     }
 

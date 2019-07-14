@@ -134,7 +134,7 @@ class App extends React.Component {
             return;
         }
 
-        this.API.leaveGame({playerName: this.state.playerName}).then(
+        this.API.leaveGame(this.state.connectionId).then(
             () => {
                 this.setState({isUserJoined: false})
             },

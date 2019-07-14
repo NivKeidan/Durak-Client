@@ -1,6 +1,5 @@
 export class API {
     createGame(optionsObject) {
-        console.log()
         return new Promise ( (resolve, reject) => {
                 fetch(process.env.REACT_APP_host + process.env.REACT_APP_createGameEndpoint, {
                     method: 'POST',
@@ -36,16 +35,16 @@ export class API {
         });
     }
 
-    leaveGame(optionsObject) {
+    leaveGame(connId) {
         return new Promise ( (resolve, reject) => {
             fetch(process.env.REACT_APP_host + process.env.REACT_APP_leaveGameEndpoint, {
                 method: 'POST',
                 mode: 'cors',
                 cache: 'no-cache',
                 headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(optionsObject)
+                    'Content-Type': 'application/json',
+                    'ConnectionId': connId
+                }
             }).then(
                 (res) =>
                     handleResponse(resolve, reject, res)
@@ -54,14 +53,15 @@ export class API {
         });
     }
 
-    attack(attackObject) {
+    attack(connId, attackObject) {
         return new Promise( (resolve, reject) => {
             fetch(process.env.REACT_APP_host + process.env.REACT_APP_attackEndpoint, {
                 method: 'POST',
                 mode: 'cors',
                 cache: 'no-cache',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'ConnectionId': connId
                 },
                 body: JSON.stringify(attackObject)
             }).then( (res) =>
@@ -71,14 +71,15 @@ export class API {
         });
     }
 
-    defend(defendObject) {
+    defend(connId, defendObject) {
         return new Promise((resolve, reject) => {
             fetch(process.env.REACT_APP_host + process.env.REACT_APP_defendEndpoint, {
                 method: 'POST',
                 mode: 'cors',
                 cache: 'no-cache',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'ConnectionId': connId
                 },
                 body: JSON.stringify(defendObject)
             }).then( (res) =>
@@ -88,16 +89,16 @@ export class API {
         });
     }
 
-    moveCardsToBita(moveCardsToBitaObject) {
+    moveCardsToBita(connId) {
         return new Promise( (resolve, reject) => {
             fetch(process.env.REACT_APP_host + process.env.REACT_APP_moveCardsToBitaEndpoint, {
                 method: 'POST',
                 mode: 'cors',
                 cache: 'no-cache',
                 headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(moveCardsToBitaObject)
+                    'Content-Type': 'application/json',
+                    'ConnectionId': connId
+                }
             }).then( (res) =>
                 handleResponse(resolve, reject, res)
             ).catch( (err) =>
@@ -105,16 +106,16 @@ export class API {
         });
     }
 
-    takeAllCards(takeCardsObject) {
+    takeAllCards(connId) {
         return new Promise( (resolve, reject) => {
             fetch(process.env.REACT_APP_host + process.env.REACT_APP_takeCardsEndpoint, {
                 method: 'POST',
                 mode: 'cors',
                 cache: 'no-cache',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'ConnectionId': connId
                 },
-                body: JSON.stringify(takeCardsObject)
             }).then( (res) =>
                 handleResponse(resolve, reject, res)
             ).catch( (err) =>
@@ -122,7 +123,7 @@ export class API {
         });
     }
 
-    restartGame() {
+    restartGame(connId) {
 
         return new Promise( (resolve, reject) => {
             fetch(process.env.REACT_APP_host + process.env.REACT_APP_restartGameEndpoint, {
@@ -130,7 +131,8 @@ export class API {
                 mode: 'cors',
                 cache: 'no-cache',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'ConnectionId': connId
                 }
             }).then( (res) =>
                 handleResponse(resolve, reject, res)

@@ -47,7 +47,7 @@ class Game extends React.Component {
 
     connectToGameStream() {
         this.gameStream = new EventSource(process.env.REACT_APP_host + process.env.REACT_APP_gameStreamEndpoint +
-            '?id=' + this.props.connectionId + '&name=' + this.props.playerName);
+            '?id=' + this.props.connectionId);
         this.gameStream.addEventListener('gameupdated', this.handleEventGameUpdated);
         this.gameStream.addEventListener('gamestarted', this.handleEventGameStarted);
         this.gameStream.addEventListener('gamerestarted', this.handleEventGameUpdated);

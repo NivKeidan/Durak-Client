@@ -1,7 +1,11 @@
 .card {
-    border: 5px solid transparent;
+    margin: 5px;
 }
 
 .card-selected {
-    border: 5px solid blue;
+    border: 5px solid blue !important;
+}
+
+.card-can-be-played {
+    border: 5px solid green;
 }

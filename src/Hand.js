@@ -12,7 +12,8 @@ function Hand(props) {
               {props.cards.map(
                   (item, key) => <Card key={key} code={item}
                                        onCardClick={() => props.cardOnClick(item)}
-                                       selected={props.cardSelected === item && item !== null }/>)}
+                                       selected={props.cardSelected === item && item !== null}
+                                       canBePlayed={props.canCardBeUsed(item)}/>)}
           </div>
           {props.isDefending && props.canPerformActions ?
           <div className={"player-buttons"}>

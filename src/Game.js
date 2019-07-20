@@ -15,6 +15,7 @@ class Game extends React.Component {
         this.handleEventGameStarted = this.handleEventGameStarted.bind(this);
         this.connectToGameStream = this.connectToGameStream.bind(this);
         this.getCardValueByCode = this.getCardValueByCode.bind(this);
+        this.canCardBeUsed = this.canCardBeUsed.bind(this);
 
         this.state = {
             cardSelected: null,
@@ -156,6 +157,11 @@ class Game extends React.Component {
             }
         }
 
+        if (!this.canDefend(defendingCardCode, attackingCardCode)) {
+            console.log("Can not defend");
+            return
+        }
+
         this.props.API.defend(this.props.connectionId, {
             defendingCardCode,
             attackingCardCode}
@@ -220,6 +226,7 @@ class Game extends React.Component {
         return (
             Object.keys(this.state.playerPositions).map(
                 (item, key) => <Hand key={key}
+                                     canCardBeUsed={this.canCardBeUsed}
                                      playerName={item}
                                      position={this.state.playerPositions[item]}
                                      cards={this.state.playerCards[item]}
@@ -287,7 +294,35 @@ class Game extends React.Component {
         this.setState({cardSelected: null})
     }
 
+    canCardBeUsed(cardCode) {
+        if (cardCode === null)
+            return false;
+        if (this.state.playerDefending === this.props.playerName) {
+            for (const cardOnTable of this.state.cardsOnTable) {
+                if (cardOnTable[1] === "" && this.canDefend(cardCode, cardOnTable[0]) ) {
+                    return true;
+                }
+            }
+        }
+        else
+            return this.canAddCard(cardCode);
+        return false;
+    }
+
     // Game Validators
+
+    canDefend(defendingCardCode, attackingCardCode) {
+        if (defendingCardCode === null || attackingCardCode === null)
+            return false;
+
+        const defendingKind = defendingCardCode[defendingCardCode.length - 1];
+        const attackingKind = attackingCardCode[attackingCardCode.length - 1];
+
+        if (defendingKind === attackingKind)
+            return this.getCardValueByCode(defendingCardCode) > this.getCardValueByCode(attackingCardCode);
+        else
+            return defendingKind === this.state.kozerCard[this.state.kozerCard.length - 1];
+    }
 
     numOfUndefendedCards() {
         let counter = 0;
@@ -334,7 +369,7 @@ class Game extends React.Component {
     }
 
     canAddCard(cardCode) {
-        if (this.isBoardEmpty())
+        if (this.isBoardEmpty() && this.props.playerName === this.state.playerStarting)
             return true;
 
         const cardValue = this.getCardValueByCode(cardCode);

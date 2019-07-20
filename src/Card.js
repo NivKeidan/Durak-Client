@@ -3,7 +3,7 @@ import "./styles/Card.css";
 
 function Card(props) {
         return (
-        <div className={"card " + (props.selected ? "card-selected" : "")}
+        <div className={"card " + (props.selected ? "card-selected " : "") + (props.canBePlayed ? "card-can-be-played " : "")}
         onClick={(e) => props.onCardClick(e)}>
             <img src={"./pics/cards/" + props.code + ".png"}
                  alt="card should be shown here..."

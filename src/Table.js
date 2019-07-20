@@ -30,7 +30,8 @@ function Table(props) {
                     (item, key) => item[1] === null || item[1] === "" ?
                         <Card code={item[0]} key={key}
                               selected={false}
-                              onCardClick={(e) => props.handleTableCardClick(e, item[0])}/> :
+                              onCardClick={(e) => props.handleTableCardClick(e, item[0])}
+                              canBePlayed={false}/> :
                         <CardDefended key={key} attackingCardCode={item[0]}
                                       defendingCardCode={item[1]}/>
                 )}

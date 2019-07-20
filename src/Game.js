@@ -103,7 +103,7 @@ class Game extends React.Component {
 
         // Validations
 
-        if (cardCode) {
+        if (cardCode !== "") {
 
             if (!this.canAttackNow()) {
                 console.log("Can not attack now");

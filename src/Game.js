@@ -16,12 +16,15 @@ class Game extends React.Component {
         this.connectToGameStream = this.connectToGameStream.bind(this);
         this.getCardValueByCode = this.getCardValueByCode.bind(this);
         this.canCardBeUsed = this.canCardBeUsed.bind(this);
+        this.handleCardDragged = this.handleCardDragged.bind(this);
+        this.handleCardDragStopped = this.handleCardDragStopped.bind(this);
 
         this.state = {
             cardSelected: null,
             playerPositions: {1: "top", 2: "left", 3: "bottom", 4: "right"},
             playerStarting: null,
             playerDefending: null,
+            isCardDragged: false,
             playerCards: {
                 1: [],
                 2: [],
@@ -72,11 +75,20 @@ class Game extends React.Component {
         this.setState(stateObj);
     }
 
+    handleCardDragged() {
+        if (!this.state.isCardDragged)
+            this.setState({isCardDragged: true})
+    }
+
+    handleCardDragStopped() {
+        this.setState({isCardDragged: false})
+    }
+
     // API Actions
 
     takeCards() {
 
-        // Validations
+        this.setState({cardSelected: null});
 
         // Validate this is player's turn
         if (this.state.playerDefending !== this.props.playerName) {
@@ -103,31 +115,32 @@ class Game extends React.Component {
 
         // Validations
 
-        if (cardCode !== "") {
+        if (cardCode === "") {
+            console.log("No card selected");
+            return;
+        }
 
-            if (!this.canAttackNow()) {
-                console.log("Can not attack now");
-                return;
-            }
+        if (!this.canAttackNow()) {
+            console.log("Can not attack now");
+            return;
+        }
 
-            // TODO Add check card limit set in game options
+        // TODO Add check card limit set in game options
 
-            if (this.numOfUndefendedCards() >= this.getNumOfCardsInHand()) {
-                // TODO Future option: can put card on table and defender can decide which to reply
-                console.log("Defender does not have enough cards");
-                return;
-            }
+        if (this.numOfUndefendedCards() >= this.getNumOfCardsInHand()) {
+            // TODO Future option: can put card on table and defender can decide which to reply
+            console.log("Defender does not have enough cards");
+            return;
+        }
 
-            if (!this.isCardInHand(cardCode)) {
-                console.log("You do not have that card");
-                return;
-            }
+        if (!this.isCardInHand(cardCode)) {
+            console.log("You do not have that card");
+            return;
+        }
 
-            if (!this.canAddCard(cardCode)) {
-                console.log("Cannot attack with this card");
-                return
-            }
-
+        if (!this.canAddCard(cardCode)) {
+            console.log("Cannot attack with this card");
+            return
         }
 
         this.props.API.attack(this.props.connectionId, {
@@ -175,6 +188,8 @@ class Game extends React.Component {
 
     handleMoveCardsToBita() {
 
+        this.setState({cardSelected: null});
+
         // Validations
 
         if (this.isBoardEmpty()) {
@@ -201,16 +216,7 @@ class Game extends React.Component {
     }
 
     handleCardClicked(cardCode) {
-
-        this.setState((prevState) => {
-            // Cancel selection if selected card is clicked again
-            if (cardCode === prevState.cardSelected) {
-                cardCode = null;
-            }
-            return {
-                cardSelected: cardCode
-            };
-        });
+        this.setState({cardSelected: cardCode});
     }
 
     handleTableCardClick(e, tableCardCode) {
@@ -235,7 +241,9 @@ class Game extends React.Component {
                                      takeCards={() => this.takeCards(item)}
                                      isDefending={item === this.state.playerDefending}
                                      canPerformActions={this.props.playerName === item}
-                                     moveCardsToBita={() => this.handleMoveCardsToBita(item)}/>))
+                                     moveCardsToBita={() => this.handleMoveCardsToBita(item)}
+                                     handleCardDragged={this.handleCardDragged}
+                                     handleCardDragStopped={this.handleCardDragStopped}/>))
     };
 
     renderTable() {
@@ -243,7 +251,8 @@ class Game extends React.Component {
             <Table cardsOnTable={this.state.cardsOnTable} kozerCard={this.state.kozerCard}
                    handleTableClick={this.handleTableClick}
                    handleTableCardClick={(e, tableCardCode) => this.handleTableCardClick(e, tableCardCode)}
-                   cardsLeftInDeck={this.state.numOfCardsLeftInDeck}/>);
+                   cardsLeftInDeck={this.state.numOfCardsLeftInDeck}
+                   isCardDragged={this.state.isCardDragged}/>);
     }
 
     renderRestartGameButton() {
@@ -388,8 +397,11 @@ class Game extends React.Component {
     getCardValueByCode(cardCode) {
         // Returns 0 if error occurred
 
-        const valueCode = cardCode.substring(0, cardCode.length-1);
         let value = 0;
+        if (cardCode === "")
+            return value;
+
+        const valueCode = cardCode.substring(0, cardCode.length-1);
 
         switch(valueCode) {
             case "A":

@@ -13,7 +13,10 @@ function Hand(props) {
                   (item, key) => <Card key={key} code={item}
                                        onCardClick={() => props.cardOnClick(item)}
                                        selected={props.cardSelected === item && item !== null}
-                                       canBePlayed={props.canCardBeUsed(item)}/>)}
+                                       canBePlayed={props.canCardBeUsed(item)}
+                                       handleDragStart={props.handleCardDragged}
+                                       handleDragEnd={props.handleCardDragStopped}
+                  />)}
           </div>
           {props.isDefending && props.canPerformActions ?
           <div className={"player-buttons"}>

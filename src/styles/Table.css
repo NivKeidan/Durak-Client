@@ -3,7 +3,12 @@
     grid-row: 2;
 }
 
+.dragged-on {
+    border: 5px solid black;
+}
+
 .deck-and-kozer {
+    pointer-events: none;
     margin-top: 10px;
     position: absolute;
     margin-left: 30px;
@@ -32,13 +37,11 @@
     display: inline;
     position: absolute;
     text-align: center;
-    /*left: 50%;*/
-    /*top: 15%;*/
-    /*font-size: 300%;*/
     color: darkgreen;
 }
 
 .table-cards {
+    pointer-events: none;
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;

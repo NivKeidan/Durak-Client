@@ -46,7 +46,6 @@ class Game extends React.Component {
 
     componentDidMount() {
         this.connectToGameStream();
-
     }
 
     // SSE

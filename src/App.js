@@ -47,6 +47,7 @@ class App extends React.Component {
         this.appStream = new EventSource(process.env.REACT_APP_host + process.env.REACT_APP_appStreamEndpoint);
         this.appStream.onerror = this.handleAppStreamError;
         this.appStream.addEventListener('gamestatus', this.handleEventGameStatus);
+        this.appStream.addEventListener('isAlive', this.handleEventIsAlive);
     }
 
     handleEventGameStatus(e) {
@@ -92,10 +93,8 @@ class App extends React.Component {
             this.closeAppStream();
     }
 
-    updateReady() {
-        if (this.state.connectionId && this.state.isGameRunning && this.state.playerName) {
-            this.setState({isReady: true})
-        }
+    handleEventIsAlive() {
+        this.API.alive(this.props.connectionId);
     }
 
     // API Actions
@@ -161,10 +160,16 @@ class App extends React.Component {
             });
     }
 
-    // Validations
+    // Validations and other methods
 
     isNameValid(playerName) {
         return /^[a-zA-Z0-9]+$/.test(playerName);
+    }
+
+    updateReady() {
+        if (this.state.connectionId && this.state.isGameRunning && this.state.playerName) {
+            this.setState({isReady: true})
+        }
     }
 
     // Renderings

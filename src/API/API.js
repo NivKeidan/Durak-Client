@@ -144,7 +144,7 @@ export class API {
     alive(connId) {
         return new Promise ( (resolve, reject) => {
             fetch(process.env.REACT_APP_host + process.env.REACT_APP_aliveEndpoint, {
-                method: 'POST',
+                method: 'GET',
                 mode: 'cors',
                 cache: 'no-cache',
                 headers: {

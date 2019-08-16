@@ -19,6 +19,7 @@ class Game extends React.Component {
         this.handleCardDragged = this.handleCardDragged.bind(this);
         this.handleCardDragStopped = this.handleCardDragStopped.bind(this);
         this.handleGameStreamError = this.handleGameStreamError.bind(this);
+        this.handleEventIsAlive = this.handleEventIsAlive.bind(this);
 
         this.state = {
             cardSelected: null,
@@ -57,6 +58,7 @@ class Game extends React.Component {
         this.gameStream.addEventListener('gameupdated', this.handleEventGameUpdated);
         this.gameStream.addEventListener('gamestarted', this.handleEventGameStarted);
         this.gameStream.addEventListener('gamerestarted', this.handleEventGameUpdated);
+        this.gameStream.addEventListener('isAlive', this.handleEventIsAlive);
     }
 
     handleEventGameUpdated(e) {
@@ -90,6 +92,10 @@ class Game extends React.Component {
         console.log('Game stream error occurred');
         this.gameStream.close();
         this.props.handleGameStreamClosed();
+    }
+
+    handleEventIsAlive() {
+        this.props.API.alive(this.props.connectionId);
     }
 
     // API Actions

@@ -141,6 +141,22 @@ export class API {
         });
     }
 
+    alive(connId) {
+        return new Promise ( (resolve, reject) => {
+            fetch(process.env.REACT_APP_host + process.env.REACT_APP_aliveEndpoint, {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ConnectionId': connId
+                }
+            }).then( (res) =>
+                handleResponse(resolve, reject, res)
+            ).catch( (err) =>
+                handleError(reject, err))
+        });
+    }
 }
 
 function handleError(reject, err) {

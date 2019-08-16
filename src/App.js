@@ -94,7 +94,8 @@ class App extends React.Component {
     }
 
     handleEventIsAlive() {
-        this.API.alive(this.props.connectionId);
+        if (this.state.isUserJoined)
+            this.API.alive(this.props.connectionId);
     }
 
     // API Actions

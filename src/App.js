@@ -18,6 +18,9 @@ class App extends React.Component {
         this.closeAppStream = this.closeAppStream.bind(this);
         this.handleAppStream = this.handleAppStream.bind(this);
         this.updateReady = this.updateReady.bind(this);
+        this.handleAppStreamError = this.handleAppStreamError.bind(this);
+        this.createAppStream = this.createAppStream.bind(this);
+        this.handleGameStreamClosed = this.handleGameStreamClosed.bind(this);
 
         this.state = {
             // Add options here, or go down to menu
@@ -26,7 +29,8 @@ class App extends React.Component {
             isUserJoined: false,
             connectionId: null,
             playerName: null,
-            isWatcher: false
+            isWatcher: false,
+            isReady: false
         };
     }
 
@@ -34,11 +38,16 @@ class App extends React.Component {
 
     componentDidMount() {
         this.API = new API();
-        this.appStream = new EventSource(process.env.REACT_APP_host + process.env.REACT_APP_appStreamEndpoint);
-        this.appStream.addEventListener('gamestatus', this.handleEventGameStatus);
+        this.createAppStream();
     }
 
     // SSE
+
+    createAppStream() {
+        this.appStream = new EventSource(process.env.REACT_APP_host + process.env.REACT_APP_appStreamEndpoint);
+        this.appStream.onerror = this.handleAppStreamError;
+        this.appStream.addEventListener('gamestatus', this.handleEventGameStatus);
+    }
 
     handleEventGameStatus(e) {
         if (e.origin !== process.env.REACT_APP_host) {
@@ -60,6 +69,15 @@ class App extends React.Component {
             //  and here is where the registration should be
             this.setState(JSON.parse(e.data))
 
+    }
+
+    handleAppStreamError() {
+        console.log('Error occurred when trying to get application SSE');
+        this.setState({isGameRunning: false, isGameCreated: false, isUserJoined: false, isReady: false});
+    }
+
+    handleGameStreamClosed() {
+        this.createAppStream();
     }
 
     closeAppStream() {
@@ -154,7 +172,8 @@ class App extends React.Component {
     renderGame() {
         this.handleAppStream();
         return (
-            <Game API={this.API} connectionId={this.state.connectionId} playerName={this.state.playerName}/>
+            <Game API={this.API} connectionId={this.state.connectionId} playerName={this.state.playerName}
+                  handleGameStreamClosed={this.handleGameStreamClosed}/>
         )
     }
 

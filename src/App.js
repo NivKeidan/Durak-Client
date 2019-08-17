@@ -21,6 +21,7 @@ class App extends React.Component {
         this.handleAppStreamError = this.handleAppStreamError.bind(this);
         this.createAppStream = this.createAppStream.bind(this);
         this.handleGameStreamClosed = this.handleGameStreamClosed.bind(this);
+        this.handleEventIsAlive = this.handleEventIsAlive.bind(this);
 
         this.state = {
             // Add options here, or go down to menu
@@ -95,7 +96,7 @@ class App extends React.Component {
 
     handleEventIsAlive() {
         if (this.state.isUserJoined)
-            this.API.alive(this.props.connectionId);
+            this.API.alive(this.state.connectionId);
     }
 
     // API Actions

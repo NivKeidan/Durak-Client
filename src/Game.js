@@ -248,6 +248,7 @@ class Game extends React.Component {
                                      canCardBeUsed={this.canCardBeUsed}
                                      playerName={item}
                                      position={this.state.playerPositions[item]}
+                                     playerLeft={!(item in this.state.playerCards)}
                                      cards={this.state.playerCards[item]}
                                      cardSelected={this.state.cardSelected}
                                      cardOnClick={this.handleCardClicked}

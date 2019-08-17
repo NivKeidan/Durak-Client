@@ -8,6 +8,7 @@ function Hand(props) {
           <div className={"playerHeader"}>
               {props.playerName}
           </div>
+          {props.playerLeft ? "PLAYER LEFT WOW" :
           <div className={"handCards"}>
               {props.cards.map(
                   (item, key) => <Card key={key} code={item}
@@ -17,7 +18,7 @@ function Hand(props) {
                                        handleDragStart={props.handleCardDragged}
                                        handleDragEnd={props.handleCardDragStopped}
                   />)}
-          </div>
+          </div>}
           {props.isDefending && props.canPerformActions ?
           <div className={"player-buttons"}>
               <button className={"btn-take-cards"} onClick={() => props.takeCards()}> Take Cards </button>

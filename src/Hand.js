@@ -21,8 +21,8 @@ function Hand(props) {
           </div>}
           {props.isDefending && props.canPerformActions ?
           <div className={"player-buttons"}>
-              <button className={"btn-take-cards"} onClick={() => props.takeCards()}> Take Cards </button>
-              <button className={"btn-bita"} onClick={() => props.moveCardsToBita()}> Move Cards To Bita </button>
+              <button className={"btn-take-cards"} onClick={props.takeCards}> Take Cards </button>
+              <button className={"btn-bita"} onClick={props.moveCardsToBita}> Move Cards To Bita </button>
           </div> : null }
       </div>
     );

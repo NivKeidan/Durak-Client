@@ -56,7 +56,7 @@ class App extends React.Component {
             console.log('SECURITY ORIGIN UNCLEAR');
             return;
         }
-        this.setState(JSON.parse(e.data), () => this.updateReady());
+        this.setState(JSON.parse(e.data), this.updateReady);
     }
 
     handleEventGameStarted(e) {
@@ -120,7 +120,7 @@ class App extends React.Component {
                 this.setState({
                     isUserJoined: true,
                     connectionId: res.idCode,
-                    playerName: res.playerName}, () => this.updateReady());
+                    playerName: res.playerName}, this.updateReady);
             },
             function failed(err) {
                 console.log(err.message);
@@ -139,7 +139,7 @@ class App extends React.Component {
                 this.setState({
                     isUserJoined: true,
                     connectionId: res.idCode,
-                    playerName: res.playerName}, () => this.updateReady());
+                    playerName: res.playerName}, this.updateReady);
             },
             function failed(err) {
                 console.log(err.message);

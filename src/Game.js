@@ -20,6 +20,7 @@ class Game extends React.Component {
         this.handleCardDragStopped = this.handleCardDragStopped.bind(this);
         this.handleGameStreamError = this.handleGameStreamError.bind(this);
         this.handleEventIsAlive = this.handleEventIsAlive.bind(this);
+        this.clearCardSelected = this.clearCardSelected.bind(this);
 
         this.state = {
             cardSelected: null,
@@ -158,9 +159,7 @@ class Game extends React.Component {
 
         this.props.API.attack(this.props.connectionId, {
             attackingCardCode: cardCode
-        }).then(()=>{
-                this.clearCardSelected()
-            },
+        }).then(this.clearCardSelected,
             function failed(err) {
                 console.log(err.message);
             })
@@ -191,9 +190,7 @@ class Game extends React.Component {
         this.props.API.defend(this.props.connectionId, {
             defendingCardCode,
             attackingCardCode}
-        ).then(()=>{
-                this.clearCardSelected()
-            },
+        ).then(this.clearCardSelected,
             function failed(err) {
                 console.log(err.message);
             })

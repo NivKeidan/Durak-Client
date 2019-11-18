@@ -50,7 +50,7 @@ class Table extends React.Component {
 
         return (
             <div className={"table" + (this.state.isDraggedOn ? " dragged-on" : "")}
-                 onClick={() => this.props.handleTableClick()}
+                 onClick={this.props.handleTableClick}
                  {...tableDragEvents}
             >
                 <div className={"deck-and-kozer"}>

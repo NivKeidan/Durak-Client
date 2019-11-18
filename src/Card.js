@@ -58,7 +58,7 @@ class Card extends React.Component {
                 {...cardOnTableEvents}
                 draggable={this.props.canBePlayed}
                 onMouseLeave={() => this.setState({isMouseOver: false})}
-                onDragEnd={() => this.props.handleDragEnd()}
+                onDragEnd={this.props.handleDragEnd}
                 onMouseDown={(e) => this.props.onCardClick(e)}
                 >
                 <img src={"./pics/cards/" + this.props.code + ".png"}

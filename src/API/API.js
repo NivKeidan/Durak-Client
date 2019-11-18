@@ -1,12 +1,31 @@
 export class API {
-    createGame(optionsObject) {
+
+    getConnectionId() {
+        return new Promise ( (resolve, reject) => {
+            fetch(process.env.REACT_APP_host + process.env.REACT_APP_getConnectionIdEndpoint, {
+                method: 'GET',
+                mode: 'cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(
+                (res) =>
+                    handleResponse(resolve, reject, res)
+            ).catch( (err) =>
+                handleError(reject, err))
+        });
+    }
+
+    createGame(connId, optionsObject) {
         return new Promise ( (resolve, reject) => {
                 fetch(process.env.REACT_APP_host + process.env.REACT_APP_createGameEndpoint, {
                     method: 'POST',
                     mode: 'cors',
                     cache: 'no-cache',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'ConnectionId': connId
                     },
                     body: JSON.stringify(optionsObject)
                 }).then(
@@ -17,14 +36,15 @@ export class API {
             });
     }
 
-    joinGame(optionsObject) {
+    joinGame(connId, optionsObject) {
         return new Promise ( (resolve, reject) => {
             fetch(process.env.REACT_APP_host + process.env.REACT_APP_joinGameEndpoint, {
                 method: 'POST',
                 mode: 'cors',
                 cache: 'no-cache',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'ConnectionId': connId
                 },
                 body: JSON.stringify(optionsObject)
             }).then(

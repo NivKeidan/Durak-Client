@@ -39,13 +39,24 @@ class App extends React.Component {
 
     componentDidMount() {
         this.API = new API();
-        this.createAppStream();
+
+        this.API.getConnectionId().then(
+            (res) => {
+                this.setState({
+                    connectionId: res.connectionId
+                }, this.createAppStream)
+            },
+            function failed(err) {
+                console.log(err.message); // TODO add better error handling here
+            }
+        );
     }
 
     // SSE
 
     createAppStream() {
-        this.appStream = new EventSource(process.env.REACT_APP_host + process.env.REACT_APP_appStreamEndpoint);
+        this.appStream = new EventSource(process.env.REACT_APP_host + process.env.REACT_APP_appStreamEndpoint +
+            '?id=' + this.state.connectionId);
         this.appStream.onerror = this.handleAppStreamError;
         this.appStream.addEventListener('gamestatus', this.handleEventGameStatus);
         this.appStream.addEventListener('isAlive', this.handleEventIsAlive);
@@ -95,8 +106,7 @@ class App extends React.Component {
     }
 
     handleEventIsAlive() {
-        if (this.state.isUserJoined)
-            this.API.alive(this.state.connectionId);
+        this.API.alive(this.state.connectionId);
     }
 
     // API Actions
@@ -115,7 +125,7 @@ class App extends React.Component {
 
         // TODO CreateGame API call should accept an options object in the future
 
-        this.API.createGame({numOfPlayers: numOfPlayers, playerName}).then(
+        this.API.createGame(this.state.connectionId,{numOfPlayers: numOfPlayers, playerName}).then(
             (res) => {
                 this.setState({
                     isUserJoined: true,
@@ -134,7 +144,7 @@ class App extends React.Component {
             return;
         }
 
-        this.API.joinGame({playerName}).then(
+        this.API.joinGame(this.state.connectionId, {playerName}).then(
             (res) => {
                 this.setState({
                     isUserJoined: true,

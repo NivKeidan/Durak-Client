@@ -94,7 +94,7 @@ class Menu extends React.Component {
 
     renderGameInProgressMenu() {
         return (
-            <div> Game running menu </div>
+            <div> Game running... </div>
         )
     }
 

@@ -129,8 +129,7 @@ class App extends React.Component {
             (res) => {
                 this.setState({
                     isUserJoined: true,
-                    connectionId: res.idCode,
-                    playerName: res.playerName}, this.updateReady);
+                    playerName: playerName}, this.updateReady);
             },
             function failed(err) {
                 console.log(err.message);
@@ -148,8 +147,7 @@ class App extends React.Component {
             (res) => {
                 this.setState({
                     isUserJoined: true,
-                    connectionId: res.idCode,
-                    playerName: res.playerName}, this.updateReady);
+                    playerName: playerName}, this.updateReady);
             },
             function failed(err) {
                 console.log(err.message);

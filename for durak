@@ -1,0 +1,74 @@
+Handle these cases. Consider disconnections from stream (stream closed) and no isAlive responses.
+	- client disconnects while waiting for more players
+	- server disconnects while game is running
+	- client diseconnects while game is running (give chance to go back to game)
+go over client and remove unnecessary usages of anonymouse functions (for ex, handleeventgamestatus - the callback)
+add sign if server is reachable in starting screen
+handle client afk situations
+bug (create game for 4, join 2, leave both, crete new game for 2, join 2, errors)
+bug (create game for two, close server, re create new game, errors)
+change game end screen - show winner message and play another game button
+Add piri
+integrate feature so that players can add more after player decides to take cards (first come first serve)
+go online for testing
+make final design plan and fucking do it already
+
+TESTING:
+-----------
+Create server streamer testings
+Create server/stream tesings - open stream, send http requests and test stream responses
+Integrate server testing for headers or bad headers
+Integrate server testing for invalid payload objects
+Test sending body for requests that require no payload
+Test missing connection id header in requests
+Test having connection id header in non wanted requests (create and join)
+Go over server coverage and complete tests
+Client - add tests
+
+SERVER:
+----------
+Integrte logging (create game files logs for AI and wathcing and  what not...)
+Remove all printings/Go over TODOs
+Do not send (exactly) same event twice to client? (except for isAlive events)
+
+CLIENT:
+-----------
+
+SECURITY:
+--------------
+
+GAME OPTIONS:
+--------------
+Integrate options object (client but mostly server)
+Limit on cards on table
+Put more than player's card limit on table and defending player can choose which ones to answer?
+starting player can choose when to let other players to start adding
+
+EXTRA FOR GAME:
+-----------------
+add restart mechanism - each player need to approve, if not, ask to wait for more player or start a new game
+Add chat ability
+Add watch game ability
+add animations for double piri/hasake/etc...
+
+UX:
+-------
+add error displays (replace all console.log with this...)
+Add game menu change when game is over
+add waiting for players
+add card sorting in hand
+mark defending player
+mark starting player
+add API in front end when finishing game, even before turn is over
+add drag + magnet card when near by proper card + show places you can use on
+consider adding small stats table - cards left, kozer, etc...
+
+DESIGN:
+------------
+General makeover (check other durak apps)
+move kozer mark at end of deck as permanent
+
+LATER:
+-----------
+Make app for android/ios
+Write computer AI
